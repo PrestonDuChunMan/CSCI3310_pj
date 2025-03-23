@@ -1,6 +1,11 @@
 package edu.cuhk.csci3310.basketball_app.api;
 
+import androidx.annotation.NonNull;
+
+import org.osmdroid.util.BoundingBox;
+
 import java.util.List;
+import java.util.Locale;
 
 import edu.cuhk.csci3310.basketball_app.models.BasketballCourtData;
 import retrofit2.Call;
@@ -19,7 +24,24 @@ public class ApiHandler {
         this.basketballCourt = this.retrofit.create(BasketballCourtApiService.class);
     }
 
-    public Call<BasketballCourtData> getBasketballCourts(List<Double> boundingBox, int limit, int offset) {
-        return this.basketballCourt.getBasketballCourts(boundingBox, limit, offset);
+    public Call<BasketballCourtData> getBasketballCourts(BoundingBox boundingBox, int limit, int offset) {
+        return this.basketballCourt.getBasketballCourts(boundingBox.toString(), limit, offset);
+    }
+
+    public static class BoundingBox {
+        public final double latStart, lonStart, latEnd, lonEnd;
+
+        public BoundingBox(double latStart, double latEnd, double lonStart, double lonEnd) {
+            this.latStart = Math.min(latStart, latEnd);
+            this.latEnd = Math.max(latStart, latEnd);
+            this.lonStart = Math.min(lonStart, lonEnd);
+            this.lonEnd = Math.max(lonStart, lonEnd);
+        }
+
+        @NonNull
+        @Override
+        public String toString() {
+            return String.format(Locale.ENGLISH, "%.4f,%.4f,%.4f,%.4f", this.lonStart, this.latStart, this.lonEnd, this.latEnd);
+        }
     }
 }
