@@ -5,10 +5,13 @@ import android.location.Location;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.content.res.AppCompatResources;
+
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import org.osmdroid.api.IGeoPoint;
 import org.osmdroid.config.Configuration;
@@ -35,6 +38,8 @@ import retrofit2.Response;
 
 public class CourtFinderActivity extends AppCompatActivity {
     private MapView mapView;
+    private FloatingActionButton gpsButton;
+
     private MyLocationNewOverlay locationOverlay;
     private ApiHandler apiHandler;
     private GpsHandler gpsHandler;
@@ -52,18 +57,19 @@ public class CourtFinderActivity extends AppCompatActivity {
         Configuration.getInstance().load(ctx, PreferenceManager.getDefaultSharedPreferences(ctx));
 
         setContentView(R.layout.activity_court_finder);
-        // Add your code for court finder here (e.g., maps or location services)
+
+        // setup mapview
         this.mapView = findViewById(R.id.map);
         this.mapView.setTileSource(TileSourceFactory.MAPNIK);
-
+        // setup mapview properties
         this.locationOverlay = new MyLocationNewOverlay(new GpsMyLocationProvider(ctx), this.mapView);
         this.locationOverlay.enableMyLocation();
         this.mapView.getOverlays().add(this.locationOverlay);
         this.mapView.setZoomLevel(18);
-
-        this.mapView.setLongClickable(true);
-        this.mapView.setOnLongClickListener(this::handleLongClick);
-        this.mapView.setOnTouchListener((view, motionEvent) -> followGps = false);
+        this.mapView.setOnTouchListener(this::handleTouch);
+        // setup gps button and properties
+        this.gpsButton = findViewById(R.id.button_gps);
+        this.gpsButton.setOnClickListener(this::handleGpsButtonClick);
 
         this.apiHandler = new ApiHandler();
         this.gpsHandler = new GpsHandler(this);
@@ -99,18 +105,23 @@ public class CourtFinderActivity extends AppCompatActivity {
         this.courtUpdateTimer.cancel();
     }
 
-    public boolean handleLongClick(View view) {
-        Marker marker = new Marker(this.mapView);
-        marker.setPosition(new GeoPoint(this.mapView.getMapCenter()));
-        marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_CENTER);
-        marker.setIcon(AppCompatResources.getDrawable(this.getApplicationContext(), R.drawable.basketball));
-        this.mapView.getOverlays().add(marker);
-        return true;
-    }
-
     private void handleLocationChange(Location loc) {
         if (this.followGps)
             this.mapView.setExpectedCenter(new GeoPoint(loc.getLatitude(), loc.getLongitude()));
+    }
+
+    private boolean handleTouch(View view, MotionEvent motionEvent) {
+        this.followGps = false;
+        this.gpsButton.setImageDrawable(AppCompatResources.getDrawable(this.getApplicationContext(), R.drawable.baseline_gps_not_fixed_24));
+        return false;
+    }
+
+    private void handleGpsButtonClick(View view) {
+        if (this.followGps) return;
+        this.gpsButton.setImageDrawable(AppCompatResources.getDrawable(this.getApplicationContext(), R.drawable.baseline_gps_fixed_24));
+        this.followGps = true;
+        Location location = this.gpsHandler.getCurrentLocation();
+        this.mapView.setExpectedCenter(new GeoPoint(location.getLatitude(), location.getLongitude()));
     }
 
     private void refreshNearbyCourts() {

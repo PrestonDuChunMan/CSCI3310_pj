@@ -7,7 +7,17 @@
     android:layout_height="match_parent"
     tools:context=".CourtFinderActivity">
 
-    <!-- Placeholder for a map or court location features -->
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/button_gps"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
+        android:src="@drawable/baseline_gps_fixed_24"
+        android:contentDescription="@string/gps_fixed"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent" />
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
