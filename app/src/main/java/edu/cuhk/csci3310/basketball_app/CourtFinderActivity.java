@@ -1,6 +1,7 @@
 package edu.cuhk.csci3310.basketball_app;
 
 import android.content.Context;
+import android.content.Intent;
 import android.location.Location;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -47,6 +48,7 @@ public class CourtFinderActivity extends AppCompatActivity {
     private boolean followGps = true, fetching = false;
     private MapViewConfig mapViewConfig = null;
     private Timer courtUpdateTimer;
+    private List<Feature> courts;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -159,12 +161,16 @@ public class CourtFinderActivity extends AppCompatActivity {
                 // add back self position
                 overlays.add(locationOverlay);
                 // add all court markers
-                for (Feature feature : response.body().getFeatures()) {
+                courts = response.body().getFeatures();
+                for (int ii = 0; ii < courts.size(); ii++) {
+                    Feature feature = courts.get(ii);
                     Marker marker = new Marker(mapView);
                     double[] pos = feature.getGeometry().getCoordinates();
                     marker.setPosition(new GeoPoint(pos[1], pos[0]));
                     marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_CENTER);
                     marker.setIcon(AppCompatResources.getDrawable(getApplicationContext(), R.drawable.basketball));
+                    int ii1 = ii;
+                    marker.setOnMarkerClickListener((mark, view) -> onMarkerClick(ii1));
                     overlays.add(marker);
                 }
             }
@@ -175,5 +181,12 @@ public class CourtFinderActivity extends AppCompatActivity {
                 fetching = false;
             }
         });
+    }
+
+    private boolean onMarkerClick(int index) {
+        Intent intent = new Intent(this.getApplicationContext(), CourtDetailActivity.class);
+        this.courts.get(index).getProperties().addToIntent(intent);
+        startActivity(intent);
+        return false;
     }
 }
