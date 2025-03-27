@@ -15,7 +15,7 @@ if (!row?.name) {
 	// run migrations
 	const row = db.prepare<[], { version: number }>("SELECT version FROM schema_version ORDER BY version DESC LIMIT 1").get();
 	const version = row?.version || 0;
-	for (const file in readdirSync("migrations").sort()) {
+	for (const file of readdirSync("migrations").sort()) {
 		const ver = parseInt(file);
 		if (ver > version) {
 			const sql = readFileSync(`migrations/${file}`, "utf8");

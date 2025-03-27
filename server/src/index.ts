@@ -11,7 +11,7 @@ app.use(express.json()); // middleware for parsing post body json
 app.get("/api/court/:court/events", (req, res) => {
 	const court = verifyInteger(req.params.court, "court", res);
 	if (court === undefined) return;
-	const rows = db.prepare<[number], { id: number, title: string }>("SELECT id, title FROM events WHERE court = ?").all(court);
+	const rows = db.prepare<[number], { id: number, title: string, time: number }>("SELECT id, title, time FROM events WHERE court = ?").all(court);
 	res.json({ success: true, data: rows });
 });
 
@@ -21,7 +21,7 @@ app.get("/api/court/:court/event/:event", (req, res) => {
 	if (court === undefined) return;
 	const event = verifyInteger(req.params.event, "event", res);
 	if (event === undefined) return;
-	const row = db.prepare<[number, number], { id: number, court: number, title: string, description: string }>("SELECT * FROM events WHERE court = ? AND id = ?").get(court, event);
+	const row = db.prepare<[number, number], { id: number, court: number, title: string, description: string, time: number }>("SELECT * FROM events WHERE court = ? AND id = ?").get(court, event);
 	if (!row) {
 		res.status(404);
 		res.json({ success: false, error: `Event ${event} doesn't exist for court ${court}` });
@@ -33,8 +33,10 @@ app.get("/api/court/:court/event/:event", (req, res) => {
 app.post("/api/court/:court/event", (req, res) => {
 	const court = verifyInteger(req.params.court, "court", res);
 	if (court === undefined) return;
-	if (!verifyPostBody(req.body, ["title", "description"], res)) return;
-	db.prepare<[number, string, string], unknown>("INSERT INTO events (court, title, description) VALUES (?, ?, ?)").run(court, req.body.title, req.body.description);
+	if (!verifyPostBody(req.body, ["title", "description", "time"], res)) return;
+	const time = verifyInteger(req.body.time, "time", res);
+	if (time === undefined) return;
+	db.prepare<[number, string, string, number], unknown>("INSERT INTO events (court, title, description, time) VALUES (?, ?, ?, ?)").run(court, req.body.title, req.body.description, time);
 	res.json({ success: true });
 });
 
