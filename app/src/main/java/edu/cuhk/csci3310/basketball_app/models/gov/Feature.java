@@ -1,4 +1,4 @@
-package edu.cuhk.csci3310.basketball_app.models;
+package edu.cuhk.csci3310.basketball_app.models.gov;
 
 public class Feature {
     private final Geometry geometry;

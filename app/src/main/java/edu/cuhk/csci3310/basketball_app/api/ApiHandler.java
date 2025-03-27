@@ -2,13 +2,11 @@ package edu.cuhk.csci3310.basketball_app.api;
 
 import androidx.annotation.NonNull;
 
-import org.osmdroid.util.BoundingBox;
-
-import java.util.List;
 import java.util.Locale;
 
-import edu.cuhk.csci3310.basketball_app.models.BasketballCourtData;
-import edu.cuhk.csci3310.basketball_app.models.CourtEventListResponse;
+import edu.cuhk.csci3310.basketball_app.models.gov.BasketballCourtData;
+import edu.cuhk.csci3310.basketball_app.models.server.CourtEventListResponse;
+import edu.cuhk.csci3310.basketball_app.models.server.CourtEventResponse;
 import retrofit2.Call;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
@@ -43,6 +41,10 @@ public class ApiHandler {
 
     public Call<CourtEventListResponse> getCourtEvents(int courtId) {
         return this.courtEvent.getCourtEvents(courtId);
+    }
+
+    public Call<CourtEventResponse> getCourtEvent(int courtId, int eventId) {
+        return this.courtEvent.getCourtEvent(courtId, eventId);
     }
 
     public static class BoundingBox {

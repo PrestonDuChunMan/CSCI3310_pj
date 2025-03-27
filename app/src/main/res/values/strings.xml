@@ -7,6 +7,11 @@
     <string name="court_name">Name</string>
     <string name="court_address">Address</string>
     <string name="court_add_event">+ Add Event</string>
+    <string name="court_event_view">View</string>
+    <string name="court_subscribe">Subscribe</string>
+    <string name="court_unsubscribe">Unsubscribe</string>
+    <string name="court_subscribed">Subscribed</string>
+    <string name="court_unsubscribed">Unsubscribed</string>
 
     <string name="placeholder">Placeholder</string>
 </resources>

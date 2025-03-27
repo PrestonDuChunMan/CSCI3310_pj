@@ -1,8 +1,6 @@
 package edu.cuhk.csci3310.basketball_app.api;
 
-import java.util.List;
-
-import edu.cuhk.csci3310.basketball_app.models.BasketballCourtData;
+import edu.cuhk.csci3310.basketball_app.models.gov.BasketballCourtData;
 import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Query;

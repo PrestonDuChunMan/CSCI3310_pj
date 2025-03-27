@@ -1,5 +1,6 @@
 package edu.cuhk.csci3310.basketball_app;
 
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,12 +12,14 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
-import edu.cuhk.csci3310.basketball_app.models.SimpleCourtEvent;
+import edu.cuhk.csci3310.basketball_app.models.server.SimpleCourtEvent;
 
 public class CourtEventAdapter extends RecyclerView.Adapter<CourtEventAdapter.CourtEventViewHolder> {
+    private final int courtId;
     private List<SimpleCourtEvent> events;
 
-    public CourtEventAdapter(List<SimpleCourtEvent> events) {
+    public CourtEventAdapter(int courtId, List<SimpleCourtEvent> events) {
+        this.courtId = courtId;
         this.events = events;
     }
 
@@ -29,7 +32,7 @@ public class CourtEventAdapter extends RecyclerView.Adapter<CourtEventAdapter.Co
 
     @Override
     public void onBindViewHolder(@NonNull CourtEventViewHolder holder, int position) {
-        holder.setSimpleCourtEvent(this.events.get(position));
+        holder.setSimpleCourtEvent(this.courtId, this.events.get(position));
     }
 
     @Override
@@ -44,17 +47,37 @@ public class CourtEventAdapter extends RecyclerView.Adapter<CourtEventAdapter.Co
 
     public static class CourtEventViewHolder extends RecyclerView.ViewHolder {
         private final TextView titleView, timeView;
+        private int courtId, eventId;
+        private boolean hasData;
 
         public CourtEventViewHolder(@NonNull View view) {
             super(view);
 
             this.titleView = view.findViewById(R.id.value_title);
             this.timeView = view.findViewById(R.id.value_time);
+
+            this.titleView.setOnClickListener(this::onClick);
+            this.timeView.setOnClickListener(this::onClick);
+            view.findViewById(R.id.button_view).setOnClickListener(this::onClick);
         }
 
-        private void setSimpleCourtEvent(SimpleCourtEvent event) {
+        private void setSimpleCourtEvent(int courtId, SimpleCourtEvent event) {
             this.titleView.setText(event.getTitle());
             this.timeView.setText(event.getTime().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")));
+
+            this.courtId = courtId;
+            this.eventId = event.getId();
+            this.hasData = true;
+        }
+
+        private void onClick(View view) {
+            if (!this.hasData) return;
+            Intent intent = new Intent(view.getContext(), CourtEventActivity.class);
+            intent.putExtra("courtId", this.courtId);
+            intent.putExtra("eventId", this.eventId);
+            intent.putExtra("title", this.titleView.getText());
+            intent.putExtra("time", this.timeView.getText());
+            view.getContext().startActivity(intent);
         }
     }
 }

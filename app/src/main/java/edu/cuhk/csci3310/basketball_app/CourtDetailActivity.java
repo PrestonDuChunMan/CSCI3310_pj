@@ -14,8 +14,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 
 import edu.cuhk.csci3310.basketball_app.api.ApiHandler;
-import edu.cuhk.csci3310.basketball_app.models.CourtEventListResponse;
-import edu.cuhk.csci3310.basketball_app.models.Properties;
+import edu.cuhk.csci3310.basketball_app.models.server.CourtEventListResponse;
+import edu.cuhk.csci3310.basketball_app.models.gov.Properties;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -59,7 +59,7 @@ public class CourtDetailActivity extends AppCompatActivity {
         this.nSearch6View.setText(this.mProperties.NSEARCH06_EN == null || this.mProperties.NSEARCH06_EN.equals("N.A.") ? "" : this.mProperties.NSEARCH06_EN);
 
         this.recyclerView = findViewById(R.id.list_event);
-        this.adapter = new CourtEventAdapter(new ArrayList<>()); // initially empty, get data from server later
+        this.adapter = new CourtEventAdapter(this.mProperties.getId(), new ArrayList<>()); // initially empty, get data from server later
         this.recyclerView.setLayoutManager(new LinearLayoutManager(this));
         this.recyclerView.setAdapter(this.adapter);
 
