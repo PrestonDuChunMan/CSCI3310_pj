@@ -73,7 +73,7 @@ public class CourtFinderActivity extends AppCompatActivity {
         this.gpsButton = findViewById(R.id.button_gps);
         this.gpsButton.setOnClickListener(this::handleGpsButtonClick);
 
-        this.apiHandler = new ApiHandler();
+        this.apiHandler = ApiHandler.getInstance();
         this.gpsHandler = new GpsHandler(this);
 
         this.gpsHandler.addLocationChangeListener(this::handleLocationChange);

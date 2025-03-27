@@ -6,4 +6,7 @@
 
     <string name="court_name">Name</string>
     <string name="court_address">Address</string>
+    <string name="court_add_event">+ Add Event</string>
+
+    <string name="placeholder">Placeholder</string>
 </resources>

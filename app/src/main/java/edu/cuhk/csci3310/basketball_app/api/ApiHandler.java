@@ -8,24 +8,41 @@ import java.util.List;
 import java.util.Locale;
 
 import edu.cuhk.csci3310.basketball_app.models.BasketballCourtData;
+import edu.cuhk.csci3310.basketball_app.models.CourtEventListResponse;
 import retrofit2.Call;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class ApiHandler {
-    private final Retrofit retrofit;
-    private final BasketballCourtApiService basketballCourt;
+    private static ApiHandler INSTANCE;
 
-    public ApiHandler() {
-        this.retrofit = new Retrofit.Builder()
+    private final BasketballCourtApiService basketballCourt;
+    private final CourtEventApiService courtEvent;
+
+    private ApiHandler() {
+        Retrofit gov = new Retrofit.Builder()
                 .baseUrl("https://api.csdi.gov.hk/")
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
-        this.basketballCourt = this.retrofit.create(BasketballCourtApiService.class);
+        this.basketballCourt = gov.create(BasketballCourtApiService.class);
+        Retrofit server = new Retrofit.Builder()
+                .baseUrl("http://localhost:3000/") // change later
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+        this.courtEvent = server.create(CourtEventApiService.class);
+    }
+
+    public static ApiHandler getInstance() {
+        if (INSTANCE == null) INSTANCE = new ApiHandler();
+        return INSTANCE;
     }
 
     public Call<BasketballCourtData> getBasketballCourts(BoundingBox boundingBox, int limit, int offset) {
         return this.basketballCourt.getBasketballCourts(boundingBox.toString(), limit, offset);
+    }
+
+    public Call<CourtEventListResponse> getCourtEvents(int courtId) {
+        return this.courtEvent.getCourtEvents(courtId);
     }
 
     public static class BoundingBox {

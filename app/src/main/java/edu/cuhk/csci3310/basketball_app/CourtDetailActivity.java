@@ -2,16 +2,33 @@ package edu.cuhk.csci3310.basketball_app;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import java.util.ArrayList;
+
+import edu.cuhk.csci3310.basketball_app.api.ApiHandler;
+import edu.cuhk.csci3310.basketball_app.models.CourtEventListResponse;
 import edu.cuhk.csci3310.basketball_app.models.Properties;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class CourtDetailActivity extends AppCompatActivity {
+    private static final String TAG = "court_detail";
+
     private TextView nameView, addressView;
     private TextView nSearch1View, nSearch2View, nSearch3View, nSearch4View, nSearch5View, nSearch6View;
+    private RecyclerView recyclerView;
+    private CourtEventAdapter adapter;
+
+    private ApiHandler apiHandler;
 
     private Properties mProperties;
 
@@ -40,5 +57,45 @@ public class CourtDetailActivity extends AppCompatActivity {
         this.nSearch4View.setText(this.mProperties.NSEARCH04_EN == null || this.mProperties.NSEARCH04_EN.equals("N.A.") ? "" : this.mProperties.NSEARCH04_EN);
         this.nSearch5View.setText(this.mProperties.NSEARCH05_EN == null || this.mProperties.NSEARCH05_EN.equals("N.A.") ? "" : this.mProperties.NSEARCH05_EN);
         this.nSearch6View.setText(this.mProperties.NSEARCH06_EN == null || this.mProperties.NSEARCH06_EN.equals("N.A.") ? "" : this.mProperties.NSEARCH06_EN);
+
+        this.recyclerView = findViewById(R.id.list_event);
+        this.adapter = new CourtEventAdapter(new ArrayList<>()); // initially empty, get data from server later
+        this.recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        this.recyclerView.setAdapter(this.adapter);
+
+        this.apiHandler = ApiHandler.getInstance();
+        Call<CourtEventListResponse> events = this.apiHandler.getCourtEvents(this.mProperties.getId());
+        events.enqueue(new Callback<>() {
+            @Override
+            public void onResponse(Call<CourtEventListResponse> call, Response<CourtEventListResponse> response) {
+                CourtEventListResponse res = response.body();
+                if (res == null) {
+                    failureToast();
+                    return;
+                } else if (!res.isSuccess()) {
+                    if (res.getError() != null) failureToast(res.getError());
+                    else failureToast();
+                    return;
+                } else if (res.getData() == null) {
+                    failureToast();
+                    return;
+                }
+                adapter.updateData(res.getData());
+            }
+
+            @Override
+            public void onFailure(Call<CourtEventListResponse> call, Throwable t) {
+                Log.e(TAG, "Failed to get court events", t);
+                failureToast();
+            }
+        });
+    }
+
+    private void failureToast() {
+        this.failureToast("Failed to get court events");
+    }
+
+    private void failureToast(String reason) {
+        Toast.makeText(this, reason, Toast.LENGTH_SHORT).show();
     }
 }
