@@ -1,4 +1,4 @@
-package edu.cuhk.csci3310.basketball_app;
+package edu.cuhk.csci3310.basketball_app.adapters;
 
 import android.content.Intent;
 import android.view.LayoutInflater;
@@ -12,6 +12,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
+import edu.cuhk.csci3310.basketball_app.CourtEventActivity;
+import edu.cuhk.csci3310.basketball_app.R;
 import edu.cuhk.csci3310.basketball_app.models.server.SimpleCourtEvent;
 
 public class CourtEventAdapter extends RecyclerView.Adapter<CourtEventAdapter.CourtEventViewHolder> {

@@ -2,9 +2,11 @@ package edu.cuhk.csci3310.basketball_app.api;
 
 import androidx.annotation.NonNull;
 
+import java.util.List;
 import java.util.Locale;
 
 import edu.cuhk.csci3310.basketball_app.models.gov.BasketballCourtData;
+import edu.cuhk.csci3310.basketball_app.models.osm.Place;
 import edu.cuhk.csci3310.basketball_app.models.server.CourtEventListResponse;
 import edu.cuhk.csci3310.basketball_app.models.server.CourtEventResponse;
 import retrofit2.Call;
@@ -16,18 +18,21 @@ public class ApiHandler {
 
     private final BasketballCourtApiService basketballCourt;
     private final CourtEventApiService courtEvent;
+    private final OsmNominatimApiService osmNominatim;
 
     private ApiHandler() {
-        Retrofit gov = new Retrofit.Builder()
+        Retrofit.Builder builder = new Retrofit.Builder().addConverterFactory(GsonConverterFactory.create());
+        this.basketballCourt = builder
                 .baseUrl("https://api.csdi.gov.hk/")
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-        this.basketballCourt = gov.create(BasketballCourtApiService.class);
-        Retrofit server = new Retrofit.Builder()
+                .build()
+                .create(BasketballCourtApiService.class);
+        this.courtEvent = builder
                 .baseUrl("http://localhost:3000/") // change later
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-        this.courtEvent = server.create(CourtEventApiService.class);
+                .build().create(CourtEventApiService.class);
+        this.osmNominatim = builder
+                .baseUrl("https://nominatim.openstreetmap.org/")
+                .build()
+                .create(OsmNominatimApiService.class);
     }
 
     public static ApiHandler getInstance() {
@@ -45,6 +50,10 @@ public class ApiHandler {
 
     public Call<CourtEventResponse> getCourtEvent(int courtId, int eventId) {
         return this.courtEvent.getCourtEvent(courtId, eventId);
+    }
+
+    public Call<List<Place>> searchPlaces(String query) {
+        return this.osmNominatim.searchPlaces(query);
     }
 
     public static class BoundingBox {

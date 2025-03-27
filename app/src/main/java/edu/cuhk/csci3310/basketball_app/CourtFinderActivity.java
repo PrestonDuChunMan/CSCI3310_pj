@@ -6,11 +6,13 @@ import android.location.Location;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
-import android.view.MotionEvent;
 import android.view.View;
+import android.widget.SearchView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.content.res.AppCompatResources;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
@@ -28,6 +30,7 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import edu.cuhk.csci3310.basketball_app.adapters.MapSearchAdapter;
 import edu.cuhk.csci3310.basketball_app.api.ApiHandler;
 import edu.cuhk.csci3310.basketball_app.court_finder.MapViewConfig;
 import edu.cuhk.csci3310.basketball_app.gps.GpsHandler;
@@ -38,8 +41,13 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class CourtFinderActivity extends AppCompatActivity {
+    private static final String TAG = "court_finder";
+
     private MapView mapView;
     private FloatingActionButton gpsButton;
+    private SearchView searchView;
+    private RecyclerView searchResultView;
+    private MapSearchAdapter mapSearchAdapter;
 
     private MyLocationNewOverlay locationOverlay;
     private ApiHandler apiHandler;
@@ -53,7 +61,7 @@ public class CourtFinderActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.d("map", "created map activity");
+        Log.d(TAG, "created map activity");
 
         Context ctx = this.getApplicationContext();
         Configuration.getInstance().load(ctx, PreferenceManager.getDefaultSharedPreferences(ctx));
@@ -68,10 +76,37 @@ public class CourtFinderActivity extends AppCompatActivity {
         this.locationOverlay.enableMyLocation();
         this.mapView.getOverlays().add(this.locationOverlay);
         this.mapView.setZoomLevel(18);
-        this.mapView.setOnTouchListener(this::handleTouch);
+        this.mapView.setOnTouchListener((view, motionEvent) -> {
+            this.stopFollowingGps();
+            return false;
+        });
         // setup gps button and properties
         this.gpsButton = findViewById(R.id.button_gps);
         this.gpsButton.setOnClickListener(this::handleGpsButtonClick);
+        // setup search
+        this.searchView = findViewById(R.id.location_search);
+        this.searchResultView = findViewById(R.id.list_search);
+        this.searchResultView.setVisibility(View.INVISIBLE);
+        this.mapSearchAdapter = new MapSearchAdapter(this.mapView, this.searchView, this.searchResultView);
+        this.searchResultView.setLayoutManager(new LinearLayoutManager(this));
+        this.searchResultView.setAdapter(mapSearchAdapter);
+        this.searchView.setOnClickListener(view -> searchResultView.setVisibility(View.VISIBLE));
+        this.searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String s) {
+                Log.d(TAG, "Query submitted: " + s);
+                searchView.setEnabled(false);
+                mapSearchAdapter.changeQuery(s);
+                stopFollowingGps();
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String s) {
+                if (s.isEmpty()) mapSearchAdapter.clear();
+                return false;
+            }
+        });
 
         this.apiHandler = ApiHandler.getInstance();
         this.gpsHandler = new GpsHandler(this);
@@ -112,10 +147,9 @@ public class CourtFinderActivity extends AppCompatActivity {
             this.mapView.setExpectedCenter(new GeoPoint(loc.getLatitude(), loc.getLongitude()));
     }
 
-    private boolean handleTouch(View view, MotionEvent motionEvent) {
+    private void stopFollowingGps() {
         this.followGps = false;
         this.gpsButton.setImageDrawable(AppCompatResources.getDrawable(this.getApplicationContext(), R.drawable.baseline_gps_not_fixed_24));
-        return false;
     }
 
     private void handleGpsButtonClick(View view) {
@@ -123,7 +157,7 @@ public class CourtFinderActivity extends AppCompatActivity {
         this.gpsButton.setImageDrawable(AppCompatResources.getDrawable(this.getApplicationContext(), R.drawable.baseline_gps_fixed_24));
         this.followGps = true;
         Location location = this.gpsHandler.getCurrentLocation();
-        this.mapView.setExpectedCenter(new GeoPoint(location.getLatitude(), location.getLongitude()));
+        if (location != null) this.mapView.setExpectedCenter(new GeoPoint(location.getLatitude(), location.getLongitude()));
     }
 
     private void refreshNearbyCourts() {
@@ -177,7 +211,7 @@ public class CourtFinderActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<BasketballCourtData> call, Throwable t) {
-                Log.e("map", "Failed to get nearby courts", t);
+                Log.e(TAG, "Failed to get nearby courts", t);
                 fetching = false;
             }
         });

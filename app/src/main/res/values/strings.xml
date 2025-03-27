@@ -4,6 +4,8 @@
     <string name="gps_fixed">Following GPS</string>
     <string name="gps_not_fixed">Stopped Following GPS</string>
 
+    <string name="court_search">Search...</string>
+
     <string name="court_name">Name</string>
     <string name="court_address">Address</string>
     <string name="court_add_event">+ Add Event</string>

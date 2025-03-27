@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 
+import edu.cuhk.csci3310.basketball_app.adapters.CourtEventAdapter;
 import edu.cuhk.csci3310.basketball_app.api.ApiHandler;
 import edu.cuhk.csci3310.basketball_app.models.server.CourtEventListResponse;
 import edu.cuhk.csci3310.basketball_app.models.gov.Properties;

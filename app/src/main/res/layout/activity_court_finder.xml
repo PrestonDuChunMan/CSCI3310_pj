@@ -7,6 +7,26 @@
     android:layout_height="match_parent"
     tools:context=".CourtFinderActivity">
 
+    <FrameLayout
+        android:id="@+id/box_search"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:padding="8dp"
+        android:background="@color/osm_search_box"
+        >
+        <SearchView
+            android:id="@+id/location_search"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/osm_search"
+            android:theme="@style/Theme.AppCompat"
+            android:queryHint="@string/court_search"
+            android:iconifiedByDefault="false"
+            />
+    </FrameLayout>
+
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/button_gps"
         android:layout_width="wrap_content"
@@ -20,11 +40,21 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/box_search">
         <org.osmdroid.views.MapView
             android:id="@+id/map"
             android:layout_width="match_parent"
             android:layout_height="match_parent"/>
     </LinearLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/list_search"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/box_search"
+        android:background="@color/osm_search_results"
+        />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
