@@ -9,6 +9,8 @@ import edu.cuhk.csci3310.basketball_app.models.gov.BasketballCourtData;
 import edu.cuhk.csci3310.basketball_app.models.osm.Place;
 import edu.cuhk.csci3310.basketball_app.models.server.CourtEventListResponse;
 import edu.cuhk.csci3310.basketball_app.models.server.CourtEventResponse;
+import edu.cuhk.csci3310.basketball_app.models.server.NewCourtEvent;
+import edu.cuhk.csci3310.basketball_app.models.server.ServerResponse;
 import retrofit2.Call;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
@@ -27,7 +29,7 @@ public class ApiHandler {
                 .build()
                 .create(BasketballCourtApiService.class);
         this.courtEvent = builder
-                .baseUrl("http://localhost:3000/") // change later
+                .baseUrl("https://demo.northwestw.in/csci3310/") // change later
                 .build().create(CourtEventApiService.class);
         this.osmNominatim = builder
                 .baseUrl("https://nominatim.openstreetmap.org/")
@@ -50,6 +52,10 @@ public class ApiHandler {
 
     public Call<CourtEventResponse> getCourtEvent(int courtId, int eventId) {
         return this.courtEvent.getCourtEvent(courtId, eventId);
+    }
+
+    public Call<ServerResponse<Void>> addCourtEvent(int courtId, NewCourtEvent event) {
+        return this.courtEvent.addCourtEvent(courtId, event);
     }
 
     public Call<List<Place>> searchPlaces(String query) {

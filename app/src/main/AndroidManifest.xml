@@ -26,6 +26,12 @@
             android:name=".CourtDetailActivity"
             android:exported="false" />
         <activity
+            android:name=".CourtEventActivity"
+            android:exported="false" />
+        <activity
+            android:name=".CourtEventAddActivity"
+            android:exported="false" />
+        <activity
             android:name=".PlayerStatisticsActivity"
             android:exported="false" />
         <activity

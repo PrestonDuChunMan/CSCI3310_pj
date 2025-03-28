@@ -3,6 +3,8 @@ package edu.cuhk.csci3310.basketball_app;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -28,6 +30,7 @@ public class CourtDetailActivity extends AppCompatActivity {
     private TextView nSearch1View, nSearch2View, nSearch3View, nSearch4View, nSearch5View, nSearch6View;
     private RecyclerView recyclerView;
     private CourtEventAdapter adapter;
+    private Button addButton;
 
     private ApiHandler apiHandler;
 
@@ -64,6 +67,9 @@ public class CourtDetailActivity extends AppCompatActivity {
         this.recyclerView.setLayoutManager(new LinearLayoutManager(this));
         this.recyclerView.setAdapter(this.adapter);
 
+        this.addButton = findViewById(R.id.button_add_event);
+        this.addButton.setOnClickListener(this::addEvent);
+
         this.apiHandler = ApiHandler.getInstance();
         Call<CourtEventListResponse> events = this.apiHandler.getCourtEvents(this.mProperties.getId());
         events.enqueue(new Callback<>() {
@@ -98,5 +104,11 @@ public class CourtDetailActivity extends AppCompatActivity {
 
     private void failureToast(String reason) {
         Toast.makeText(this, reason, Toast.LENGTH_SHORT).show();
+    }
+
+    private void addEvent(View view) {
+        Intent intent = new Intent(this.getApplicationContext(), CourtEventAddActivity.class);
+        intent.putExtra("courtId", this.mProperties.getId());
+        startActivity(intent);
     }
 }

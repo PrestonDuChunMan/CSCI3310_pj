@@ -15,5 +15,14 @@
     <string name="court_subscribed">Subscribed</string>
     <string name="court_unsubscribed">Unsubscribed</string>
 
+    <string name="court_event_add">Add an event</string>
+    <string name="court_event_add_name">Name</string>
+    <string name="court_event_add_time">Time</string>
+    <string name="court_event_add_time_change">Change</string>
+    <string name="court_event_add_description">Description</string>
+
+    <string name="add">Add</string>
+    <string name="cancel">Cancel</string>
+
     <string name="placeholder">Placeholder</string>
 </resources>
