@@ -10,15 +10,16 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 
 import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.Calendar;
 
 // referred to an android studio guide
 // https://developer.android.com/develop/ui/views/components/pickers
 public class DatePickerFragment extends DialogFragment {
-    private final LocalDateTime dateTime;
+    private final ZonedDateTime dateTime;
     private final DatePickerDialog.OnDateSetListener handler;
 
-    public DatePickerFragment(@Nullable LocalDateTime dateTime, DatePickerDialog.OnDateSetListener handler) {
+    public DatePickerFragment(@Nullable ZonedDateTime dateTime, DatePickerDialog.OnDateSetListener handler) {
         this.dateTime = dateTime;
         this.handler = handler;
     }

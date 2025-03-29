@@ -1,9 +1,13 @@
 package edu.cuhk.csci3310.basketball_app;
 
+import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
+import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
@@ -11,6 +15,7 @@ import android.widget.SearchView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.content.res.AppCompatResources;
+import androidx.core.app.ActivityCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -26,6 +31,7 @@ import org.osmdroid.views.overlay.Overlay;
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider;
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -50,12 +56,12 @@ public class CourtFinderActivity extends AppCompatActivity {
     private MapSearchAdapter mapSearchAdapter;
 
     private MyLocationNewOverlay locationOverlay;
+    private GpsMyLocationProvider locationProvider;
     private ApiHandler apiHandler;
-    private GpsHandler gpsHandler;
 
     private boolean followGps = true, fetching = false;
     private MapViewConfig mapViewConfig = null;
-    private Timer courtUpdateTimer;
+    private Timer timer;
     private List<Feature> courts;
 
     @Override
@@ -65,6 +71,7 @@ public class CourtFinderActivity extends AppCompatActivity {
 
         Context ctx = this.getApplicationContext();
         Configuration.getInstance().load(ctx, PreferenceManager.getDefaultSharedPreferences(ctx));
+        askForPermissions(List.of(android.Manifest.permission.ACCESS_COARSE_LOCATION, android.Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.WRITE_EXTERNAL_STORAGE));
 
         setContentView(R.layout.activity_court_finder);
 
@@ -72,7 +79,8 @@ public class CourtFinderActivity extends AppCompatActivity {
         this.mapView = findViewById(R.id.map);
         this.mapView.setTileSource(TileSourceFactory.MAPNIK);
         // setup mapview properties
-        this.locationOverlay = new MyLocationNewOverlay(new GpsMyLocationProvider(ctx), this.mapView);
+        this.locationProvider = new GpsMyLocationProvider(ctx);
+        this.locationOverlay = new MyLocationNewOverlay(this.locationProvider, this.mapView);
         this.locationOverlay.enableMyLocation();
         this.mapView.getOverlays().add(this.locationOverlay);
         this.mapView.setZoomLevel(18);
@@ -109,17 +117,21 @@ public class CourtFinderActivity extends AppCompatActivity {
         });
 
         this.apiHandler = ApiHandler.getInstance();
-        this.gpsHandler = new GpsHandler(this);
 
-        this.gpsHandler.addLocationChangeListener(this::handleLocationChange);
-
-        this.courtUpdateTimer = new Timer();
-        this.courtUpdateTimer.schedule(new TimerTask() {
+        Handler mainHandler = new Handler(this.getMainLooper());
+        this.timer = new Timer();
+        this.timer.schedule(new TimerTask() {
             @Override
             public void run() {
                 refreshNearbyCourts();
             }
-        }, 1000, 5000);
+        }, 1000, 1000);
+        this.timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                refreshLocation(mainHandler);
+            }
+        }, 0, 1000);
     }
 
     @Override
@@ -139,12 +151,7 @@ public class CourtFinderActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        this.courtUpdateTimer.cancel();
-    }
-
-    private void handleLocationChange(Location loc) {
-        if (this.followGps)
-            this.mapView.setExpectedCenter(new GeoPoint(loc.getLatitude(), loc.getLongitude()));
+        this.timer.cancel();
     }
 
     private void stopFollowingGps() {
@@ -156,7 +163,7 @@ public class CourtFinderActivity extends AppCompatActivity {
         if (this.followGps) return;
         this.gpsButton.setImageDrawable(AppCompatResources.getDrawable(this.getApplicationContext(), R.drawable.baseline_gps_fixed_24));
         this.followGps = true;
-        Location location = this.gpsHandler.getCurrentLocation();
+        Location location = this.locationProvider.getLastKnownLocation();
         if (location != null) this.mapView.setExpectedCenter(new GeoPoint(location.getLatitude(), location.getLongitude()));
     }
 
@@ -222,5 +229,20 @@ public class CourtFinderActivity extends AppCompatActivity {
         this.courts.get(index).getProperties().addToIntent(intent);
         startActivity(intent);
         return false;
+    }
+
+    private void refreshLocation(Handler mainHandler) {
+        Location loc = this.locationProvider.getLastKnownLocation();
+        if (loc != null && this.followGps)
+            mainHandler.post(() -> this.mapView.setExpectedCenter(new GeoPoint(loc.getLatitude(), loc.getLongitude())));
+    }
+
+    private void askForPermissions(List<String> permissions) {
+        List<String> needGrant = new ArrayList<>();
+        for (String permission : permissions) {
+            if (ActivityCompat.checkSelfPermission(this.getApplicationContext(), permission) != PackageManager.PERMISSION_GRANTED)
+                needGrant.add(permission);
+        }
+        ActivityCompat.requestPermissions(this, needGrant.toArray(new String[0]), 0);
     }
 }

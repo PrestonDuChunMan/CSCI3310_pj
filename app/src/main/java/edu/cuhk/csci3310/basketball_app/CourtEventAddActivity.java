@@ -16,6 +16,8 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
 import edu.cuhk.csci3310.basketball_app.api.ApiHandler;
@@ -34,7 +36,7 @@ public class CourtEventAddActivity extends AppCompatActivity implements DatePick
 
     private ApiHandler apiHandler;
 
-    private LocalDateTime mDateTime;
+    private ZonedDateTime mDateTime;
     private int mCourtId;
 
     @Override
@@ -49,7 +51,7 @@ public class CourtEventAddActivity extends AppCompatActivity implements DatePick
 
         Intent intent = getIntent();
         this.mCourtId = intent.getIntExtra("courtId", -1);
-        this.mDateTime = LocalDateTime.now();
+        this.mDateTime = ZonedDateTime.now().withSecond(0).withNano(0);
 
         this.setTimeViewText();
 
@@ -61,9 +63,7 @@ public class CourtEventAddActivity extends AppCompatActivity implements DatePick
 
     @Override
     public void onDateSet(DatePicker datePicker, int year, int month, int day) {
-        if (this.mDateTime == null) this.mDateTime = LocalDateTime.of(year, month, day, 0, 0);
-        else this.mDateTime = this.mDateTime.withYear(year).withMonth(month).withDayOfMonth(day);
-
+        this.mDateTime = this.mDateTime.withYear(year).withMonth(month).withDayOfMonth(day);
         this.setTimeViewText();
 
         TimePickerFragment fragment = new TimePickerFragment(this.mDateTime, this);
@@ -72,7 +72,6 @@ public class CourtEventAddActivity extends AppCompatActivity implements DatePick
 
     @Override
     public void onTimeSet(TimePicker timePicker, int hour, int minute) {
-        if (this.mDateTime == null) this.mDateTime = LocalDateTime.now();
         this.mDateTime = this.mDateTime.withHour(hour).withMinute(minute);
         this.setTimeViewText();
     }

@@ -1,6 +1,7 @@
 package edu.cuhk.csci3310.basketball_app;
 
 import android.app.AlarmManager;
+import android.app.AlertDialog;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -16,8 +17,8 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 
 import edu.cuhk.csci3310.basketball_app.room.BasketballDatabase;
 import edu.cuhk.csci3310.basketball_app.room.Subscription;
@@ -25,6 +26,7 @@ import edu.cuhk.csci3310.basketball_app.room.SubscriptionDao;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 
 public class CourtEventReceiver extends BroadcastReceiver {
+    private static final long[] OFFSETS = new long[] { 0, 1, 24, 168 };
     private static final String TAG = "court_event_receiver";
     public static final int NOTIFICATION_ID = 69420;
     public static final String CHANNEL_ID = "court_event";
@@ -44,6 +46,7 @@ public class CourtEventReceiver extends BroadcastReceiver {
             String name = parent.getStringExtra("name");
             String time = parent.getStringExtra("time");
             long notifId = parent.getLongExtra("notifId", 0);
+            long offset = parent.getLongExtra("offset", -1);
             dao.get(id).doOnSuccess(subscription -> {
                 if (subscription.notifId != notifId) return;
                 mainHandler.post(() -> {
@@ -57,6 +60,8 @@ public class CourtEventReceiver extends BroadcastReceiver {
                         return;
                     compat.notify(NOTIFICATION_ID, notification);
                 });
+                if (offset == 0)
+                    dao.delete(subscription.eventId).subscribeOn(Schedulers.io()).subscribe();
             }).subscribeOn(Schedulers.io()).subscribe();
         } else {
             // we received a boot event
@@ -64,43 +69,40 @@ public class CourtEventReceiver extends BroadcastReceiver {
                 for (Subscription sub : list) {
                     mainHandler.post(() -> scheduleNotification(context, sub));
                 }
+                Log.d(TAG, "Scheduled " + list.size() + " notifications");
             }).subscribeOn(Schedulers.io()).subscribe();
         }
     }
 
     private void scheduleNotification(Context context, Subscription subscription) {
-        Intent intent = new Intent(context, CourtEventReceiver.class);
-        intent.putExtra("id", subscription.eventId);
-        intent.putExtra("name", subscription.name);
-        intent.putExtra("time", subscription.time);
-        intent.putExtra("notifId", subscription.notifId);
-
-        PendingIntent pending = PendingIntent.getBroadcast(
-                context,
-                CourtEventReceiver.NOTIFICATION_ID,
-                intent,
-                PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT
-        );
-
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-        if (alarmManager.canScheduleExactAlarms()) {
-            Log.d(TAG, "scheduling notification");
-            long now = LocalDateTime.now().toEpochSecond(ZoneOffset.UTC);
-            // set 1 week
-            long offset = subscription.time.toEpochSecond(ZoneOffset.UTC) - (60 * 60 * 24 * 7) - now;
-            if (offset > 0)
-                alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, offset * 1000, pending);
-            // set 1 day
-            offset = subscription.time.toEpochSecond(ZoneOffset.UTC) - (60 * 60 * 24) - now;
-            if (offset > 0)
-                alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, offset * 1000, pending);
-            // set 1 hour
-            offset = subscription.time.toEpochSecond(ZoneOffset.UTC) - (60 * 60) - now;
-            if (offset > 0)
-                alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, offset * 1000, pending);
-            // set exact
-            offset = subscription.time.toEpochSecond(ZoneOffset.UTC) - now;
-            alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, offset * 1000, pending);
+        if (!alarmManager.canScheduleExactAlarms()) return;
+        ZonedDateTime now = ZonedDateTime.now();
+        ZonedDateTime eventTime = subscription.time;
+        for (long offset : OFFSETS) {
+            Intent intent = new Intent(context, CourtEventReceiver.class);
+            intent.putExtra("id", subscription.eventId);
+            intent.putExtra("name", subscription.name);
+            intent.putExtra("time", subscription.time.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")));
+            intent.putExtra("notifId", subscription.notifId);
+            intent.putExtra("offset", offset);
+
+            PendingIntent pending = PendingIntent.getBroadcast(
+                    context,
+                    CourtEventReceiver.NOTIFICATION_ID,
+                    intent,
+                    PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT
+            );
+
+            ZonedDateTime notifTime = eventTime.minusHours(offset);
+            if (notifTime.isAfter(now))
+                alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, notifTime.toEpochSecond() * 1000, pending);
         }
+
+        new AlertDialog.Builder(context)
+                .setTitle(R.string.court_event_notif_title)
+                .setMessage(R.string.court_event_notif_desc)
+                .setPositiveButton(R.string.ok, (dialog, i) -> dialog.dismiss())
+                .show();
     }
 }

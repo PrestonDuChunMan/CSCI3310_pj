@@ -26,6 +26,7 @@ import androidx.room.Room;
 
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 
 import edu.cuhk.csci3310.basketball_app.api.ApiHandler;
 import edu.cuhk.csci3310.basketball_app.models.server.CourtEventResponse;
@@ -43,6 +44,7 @@ import retrofit2.Response;
 
 public class CourtEventActivity extends AppCompatActivity {
     private static final String TAG = "court_event";
+    private static final long[] OFFSETS = new long[] { 0, 1, 24, 168 };
 
     private TextView titleView, timeView, descriptionView;
     private Button subButton;
@@ -99,7 +101,7 @@ public class CourtEventActivity extends AppCompatActivity {
                     timeView.setText(mEvent.getFormattedTime());
                     descriptionView.setText(mEvent.getDescription());
 
-                    if (mEvent.getTime().isBefore(LocalDateTime.now()))
+                    if (mEvent.getTime().isBefore(ZonedDateTime.now()))
                         subButton.setEnabled(false);
                 }
 
@@ -119,7 +121,7 @@ public class CourtEventActivity extends AppCompatActivity {
                 mSubbed = true;
                 mainHandler.post(() -> {
                     subButton.setText(R.string.court_unsubscribe);
-                    if (subscription.time.isAfter(LocalDateTime.now()))
+                    if (subscription.time.isAfter(ZonedDateTime.now()))
                         subButton.setEnabled(true);
                 });
             }).doOnComplete(() -> {
@@ -181,45 +183,34 @@ public class CourtEventActivity extends AppCompatActivity {
             ActivityCompat.requestPermissions(this, new String[] {Manifest.permission.POST_NOTIFICATIONS}, 0);
         }
 
+        AlarmManager alarmManager = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
+        if (!alarmManager.canScheduleExactAlarms()) return;
+        ZonedDateTime now = ZonedDateTime.now();
+        ZonedDateTime eventTime = this.mEvent.getTime();
+        for (long offset : OFFSETS) {
             Intent intent = new Intent(this.getApplicationContext(), CourtEventReceiver.class);
-        intent.putExtra("id", this.mEventId);
-        intent.putExtra("name", this.mEvent.getTitle());
-        intent.putExtra("time", this.mEvent.getFormattedTime());
-        intent.putExtra("notifId", notifId);
+            intent.putExtra("id", this.mEventId);
+            intent.putExtra("name", this.mEvent.getTitle());
+            intent.putExtra("time", this.mEvent.getFormattedTime());
+            intent.putExtra("notifId", notifId);
+            intent.putExtra("offset", offset);
 
-        PendingIntent pending = PendingIntent.getBroadcast(
-                this.getApplicationContext(),
-                CourtEventReceiver.NOTIFICATION_ID,
-                intent,
-                PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT
-        );
+            PendingIntent pending = PendingIntent.getBroadcast(
+                    this.getApplicationContext(),
+                    CourtEventReceiver.NOTIFICATION_ID,
+                    intent,
+                    PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT
+            );
+
+            ZonedDateTime notifTime = eventTime.minusHours(offset);
+            if (notifTime.isAfter(now))
+                alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, notifTime.toEpochSecond() * 1000, pending);
+        }
 
         new AlertDialog.Builder(this)
                 .setTitle(R.string.court_event_notif_title)
                 .setMessage(R.string.court_event_notif_desc)
                 .setPositiveButton(R.string.ok, (dialog, i) -> dialog.dismiss())
                 .show();
-
-        AlarmManager alarmManager = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
-        if (alarmManager.canScheduleExactAlarms()) {
-            Log.d(TAG, "scheduling notification");
-            long now = LocalDateTime.now().toEpochSecond(ZoneOffset.UTC);
-            // set 1 week
-            long offset = this.mEvent.getTime().toEpochSecond(ZoneOffset.UTC) - (60 * 60 * 24 * 7) - now;
-            if (offset > 0)
-                alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, offset * 1000, pending);
-            // set 1 day
-            offset = this.mEvent.getTime().toEpochSecond(ZoneOffset.UTC) - (60 * 60 * 24) - now;
-            if (offset > 0)
-                alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, offset * 1000, pending);
-            // set 1 hour
-            offset = this.mEvent.getTime().toEpochSecond(ZoneOffset.UTC) - (60 * 60) - now;
-            if (offset > 0)
-                alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, offset * 1000, pending);
-            // set exact
-            offset = this.mEvent.getTime().toEpochSecond(ZoneOffset.UTC) - now;
-            Log.d(TAG, "offset: "+ offset);
-            alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, offset * 1000, pending);
-        }
     }
 }

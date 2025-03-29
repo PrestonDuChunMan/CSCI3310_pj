@@ -16,6 +16,8 @@ import java.util.List;
 
 // Referred to https://www.geeksforgeeks.org/how-to-get-current-location-in-android/
 public class GpsHandler {
+    private static GpsHandler INSTANCE;
+
     private Location currentLocation;
     private final LocationManager locationManager;
     private final boolean hasGps;
@@ -23,7 +25,7 @@ public class GpsHandler {
     private final List<OnLocationChange> listeners;
 
     @SuppressLint("MissingPermission")
-    public GpsHandler(Activity activity) {
+    private GpsHandler(Activity activity) {
         askForPermissions(activity, List.of(Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.WRITE_EXTERNAL_STORAGE));
 
         this.locationManager = (LocationManager) activity.getSystemService(Context.LOCATION_SERVICE);
@@ -50,6 +52,11 @@ public class GpsHandler {
                     0,
                     listener
             );
+    }
+
+    public static GpsHandler getInstance(Activity activity) {
+        if (INSTANCE == null) INSTANCE = new GpsHandler(activity);
+        return INSTANCE;
     }
 
     private void askForPermissions(Activity activity, List<String> permissions) {

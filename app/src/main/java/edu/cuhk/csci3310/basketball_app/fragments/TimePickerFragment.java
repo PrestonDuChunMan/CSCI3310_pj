@@ -11,15 +11,16 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 
 import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.Calendar;
 
 // referred to an android studio guide
 // https://developer.android.com/develop/ui/views/components/pickers
 public class TimePickerFragment extends DialogFragment {
-    private final LocalDateTime dateTime;
+    private final ZonedDateTime dateTime;
     private final TimePickerDialog.OnTimeSetListener handler;
 
-    public TimePickerFragment(@Nullable LocalDateTime dateTime, TimePickerDialog.OnTimeSetListener handler) {
+    public TimePickerFragment(@Nullable ZonedDateTime dateTime, TimePickerDialog.OnTimeSetListener handler) {
         this.dateTime = dateTime;
         this.handler = handler;
     }

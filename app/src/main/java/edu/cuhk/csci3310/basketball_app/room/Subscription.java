@@ -1,17 +1,19 @@
 package edu.cuhk.csci3310.basketball_app.room;
 
-import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 import androidx.room.TypeConverter;
 import androidx.room.TypeConverters;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.util.Random;
 
 @Entity
-@TypeConverters(Subscription.LocalDateTimeConverter.class)
+@TypeConverters(Subscription.ZonedDateTimeConverter.class)
 public class Subscription {
     private static final Random RNG = new Random();
 
@@ -20,9 +22,9 @@ public class Subscription {
     public int courtId;
     public long notifId;
     public String name;
-    public LocalDateTime time;
+    public ZonedDateTime time;
 
-    public Subscription(int eventId, int courtId, String name, LocalDateTime time) {
+    public Subscription(int eventId, int courtId, String name, ZonedDateTime time) {
         this.eventId = eventId;
         this.courtId = courtId;
         this.notifId = RNG.nextLong();
@@ -30,15 +32,15 @@ public class Subscription {
         this.time = time;
     }
 
-    static class LocalDateTimeConverter {
+    static class ZonedDateTimeConverter {
         @TypeConverter
-        public static LocalDateTime toLocalDateTime(Long seconds) {
-            return seconds == null ? null : LocalDateTime.ofEpochSecond(seconds, 0, ZoneOffset.UTC);
+        public static ZonedDateTime toZonedDateTime(Long seconds) {
+            return seconds == null ? null : ZonedDateTime.ofInstant(Instant.ofEpochSecond(seconds), ZoneId.systemDefault());
         }
 
         @TypeConverter
-        public static Long fromLocalDateTime(LocalDateTime dateTime) {
-            return dateTime == null ? null : dateTime.toEpochSecond(ZoneOffset.UTC);
+        public static Long fromZonedDateTime(ZonedDateTime dateTime) {
+            return dateTime == null ? null : dateTime.toEpochSecond();
         }
     }
 }
