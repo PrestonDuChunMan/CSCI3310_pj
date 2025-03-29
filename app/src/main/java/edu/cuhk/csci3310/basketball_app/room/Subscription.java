@@ -19,14 +19,15 @@ public class Subscription {
 
     @PrimaryKey
     public int eventId;
-    public int courtId;
+    public double lat, lon;
     public long notifId;
     public String name;
     public ZonedDateTime time;
 
-    public Subscription(int eventId, int courtId, String name, ZonedDateTime time) {
+    public Subscription(int eventId, double lat, double lon, String name, ZonedDateTime time) {
         this.eventId = eventId;
-        this.courtId = courtId;
+        this.lat = lat;
+        this.lon = lon;
         this.notifId = RNG.nextLong();
         this.name = name;
         this.time = time;

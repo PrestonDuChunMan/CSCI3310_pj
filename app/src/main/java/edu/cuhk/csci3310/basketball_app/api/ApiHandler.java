@@ -46,16 +46,20 @@ public class ApiHandler {
         return this.basketballCourt.getBasketballCourts(boundingBox.toString(), limit, offset);
     }
 
-    public Call<CourtEventListResponse> getCourtEvents(int courtId) {
-        return this.courtEvent.getCourtEvents(courtId);
+    private String four(double val) {
+        return String.format("%.4f", val);
     }
 
-    public Call<CourtEventResponse> getCourtEvent(int courtId, int eventId) {
-        return this.courtEvent.getCourtEvent(courtId, eventId);
+    public Call<CourtEventListResponse> getCourtEvents(double lat, double lon) {
+        return this.courtEvent.getCourtEvents(four(lat), four(lon));
     }
 
-    public Call<ServerResponse<Void>> addCourtEvent(int courtId, NewCourtEvent event) {
-        return this.courtEvent.addCourtEvent(courtId, event);
+    public Call<CourtEventResponse> getCourtEvent(double lat, double lon, int eventId) {
+        return this.courtEvent.getCourtEvent(four(lat), four(lon), eventId);
+    }
+
+    public Call<ServerResponse<Void>> addCourtEvent(double lat, double lon, NewCourtEvent event) {
+        return this.courtEvent.addCourtEvent(four(lat), four(lon), event);
     }
 
     public Call<List<Place>> searchPlaces(String query) {

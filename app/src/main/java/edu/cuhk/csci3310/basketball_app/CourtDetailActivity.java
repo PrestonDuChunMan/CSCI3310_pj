@@ -65,7 +65,7 @@ public class CourtDetailActivity extends AppCompatActivity {
         this.nSearch6View.setText(this.mProperties.NSEARCH06_EN == null || this.mProperties.NSEARCH06_EN.equals("N.A.") ? "" : this.mProperties.NSEARCH06_EN);
 
         this.recyclerView = findViewById(R.id.list_event);
-        this.adapter = new CourtEventAdapter(this.mProperties.getId(), new ArrayList<>()); // initially empty, get data from server later
+        this.adapter = new CourtEventAdapter(this.mProperties.latitude_lands, this.mProperties.longitude_lands, new ArrayList<>()); // initially empty, get data from server later
         this.recyclerView.setLayoutManager(new LinearLayoutManager(this));
         this.recyclerView.setAdapter(this.adapter);
 
@@ -83,13 +83,14 @@ public class CourtDetailActivity extends AppCompatActivity {
 
     public void addEvent(View view) {
         Intent intent = new Intent(this.getApplicationContext(), CourtEventAddActivity.class);
-        intent.putExtra("courtId", this.mProperties.getId());
+        intent.putExtra("lat", this.mProperties.latitude_lands);
+        intent.putExtra("lon", this.mProperties.longitude_lands);
         startActivity(intent);
     }
 
     public void refresh(View view) {
         this.adapter.updateData(new ArrayList<>());
-        Call<CourtEventListResponse> events = this.apiHandler.getCourtEvents(this.mProperties.getId());
+        Call<CourtEventListResponse> events = this.apiHandler.getCourtEvents(this.mProperties.latitude_lands, this.mProperties.longitude_lands);
         events.enqueue(new Callback<>() {
             @Override
             public void onResponse(Call<CourtEventListResponse> call, Response<CourtEventListResponse> response) {

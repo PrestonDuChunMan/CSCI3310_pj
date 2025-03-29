@@ -37,7 +37,7 @@ public class CourtEventAddActivity extends AppCompatActivity implements DatePick
     private ApiHandler apiHandler;
 
     private ZonedDateTime mDateTime;
-    private int mCourtId;
+    private double mLat, mLon;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -50,7 +50,8 @@ public class CourtEventAddActivity extends AppCompatActivity implements DatePick
         this.apiHandler = ApiHandler.getInstance();
 
         Intent intent = getIntent();
-        this.mCourtId = intent.getIntExtra("courtId", -1);
+        this.mLat = intent.getDoubleExtra("lat", 0);
+        this.mLon = intent.getDoubleExtra("lon", 0);
         this.mDateTime = ZonedDateTime.now().withSecond(0).withNano(0);
 
         this.setTimeViewText();
@@ -85,25 +86,24 @@ public class CourtEventAddActivity extends AppCompatActivity implements DatePick
     }
 
     public void add(View view) {
-        if (this.mCourtId >= 0) {
-            Call<ServerResponse<Void>> call = this.apiHandler.addCourtEvent(this.mCourtId, new NewCourtEvent(this.nameView.getText().toString(), this.descriptionView.getText().toString(), this.mDateTime));
-            call.enqueue(new Callback<>() {
-                @Override
-                public void onResponse(Call<ServerResponse<Void>> call, Response<ServerResponse<Void>> response) {
-                    if (response.isSuccessful() && response.body().isSuccess()) {
-                        Toast.makeText(CourtEventAddActivity.this, "Added new event to court", Toast.LENGTH_SHORT).show();
-                        finish();
-                    } else {
-                        Toast.makeText(CourtEventAddActivity.this, "Failed to add new event to court", Toast.LENGTH_SHORT).show();
-                    }
-                }
-
-                @Override
-                public void onFailure(Call<ServerResponse<Void>> call, Throwable t) {
+        Log.d(TAG, String.format("adding event to (%.4f, %.4f)", this.mLat, this.mLon));
+        Call<ServerResponse<Void>> call = this.apiHandler.addCourtEvent(this.mLat, this.mLon, new NewCourtEvent(this.nameView.getText().toString(), this.descriptionView.getText().toString(), this.mDateTime));
+        call.enqueue(new Callback<>() {
+            @Override
+            public void onResponse(Call<ServerResponse<Void>> call, Response<ServerResponse<Void>> response) {
+                if (response.isSuccessful() && response.body().isSuccess()) {
+                    Toast.makeText(CourtEventAddActivity.this, "Added new event to court", Toast.LENGTH_SHORT).show();
+                    finish();
+                } else {
                     Toast.makeText(CourtEventAddActivity.this, "Failed to add new event to court", Toast.LENGTH_SHORT).show();
-                    Log.e(TAG, "Failed to add new event to court", t);
                 }
-            });
-        }
+            }
+
+            @Override
+            public void onFailure(Call<ServerResponse<Void>> call, Throwable t) {
+                Toast.makeText(CourtEventAddActivity.this, "Failed to add new event to court", Toast.LENGTH_SHORT).show();
+                Log.e(TAG, "Failed to add new event to court", t);
+            }
+        });
     }
 }

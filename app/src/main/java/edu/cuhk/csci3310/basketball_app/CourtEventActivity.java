@@ -52,7 +52,8 @@ public class CourtEventActivity extends AppCompatActivity {
     private ApiHandler apiHandler;
     private SubscriptionDao subscriptionDao;
 
-    private int mCourtId, mEventId;
+    private double mLat, mLon;
+    private int mEventId;
     private boolean mSubbed;
     private DetailedCourtEvent mEvent;
 
@@ -72,15 +73,16 @@ public class CourtEventActivity extends AppCompatActivity {
         this.subscriptionDao = db.subscriptionDao();
 
         Intent intent = getIntent();
-        this.mCourtId = intent.getIntExtra("courtId", -1);
+        this.mLat = intent.getDoubleExtra("lat", 0);
+        this.mLon = intent.getDoubleExtra("lon", 0);
         this.mEventId = intent.getIntExtra("eventId", -1);
         this.titleView.setText(intent.getStringExtra("title"));
         this.timeView.setText(intent.getStringExtra("time"));
         this.descriptionView.setText("...");
 
-        if (mCourtId >= 0 && mEventId >= 0) {
+        if (mEventId >= 0) {
             // Get detailed event from server
-            Call<CourtEventResponse> call = this.apiHandler.getCourtEvent(mCourtId, mEventId);
+            Call<CourtEventResponse> call = this.apiHandler.getCourtEvent(mLat, mLon, mEventId);
             call.enqueue(new Callback<>() {
                 @Override
                 public void onResponse(Call<CourtEventResponse> call, Response<CourtEventResponse> response) {
@@ -148,7 +150,7 @@ public class CourtEventActivity extends AppCompatActivity {
 
     @SuppressLint("CheckResult")
     private void toggleSubscribe(View view) {
-        if (this.mEventId < 0 || this.mCourtId < 0) return;
+        if (this.mEventId < 0) return;
         this.subButton.setEnabled(false);
         Completable completable;
         long notifId;
@@ -156,7 +158,7 @@ public class CourtEventActivity extends AppCompatActivity {
             notifId = 0;
             completable = subscriptionDao.delete(this.mEventId);
         } else {
-            Subscription sub = new Subscription(this.mEventId, this.mCourtId, this.titleView.getText().toString(), this.mEvent.getTime());
+            Subscription sub = new Subscription(this.mEventId, this.mLat, this.mLon, this.titleView.getText().toString(), this.mEvent.getTime());
             completable = subscriptionDao.insert(sub);
             notifId = sub.notifId;
         }

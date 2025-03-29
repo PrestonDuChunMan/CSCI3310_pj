@@ -10,6 +10,16 @@ export function verifyInteger(val: string, name: string, res: Response) {
 	return parsed;
 }
 
+export function verifyFloat(val: string, name: string, res: Response) {
+	const parsed = parseFloat(val);
+	if (isNaN(parsed)) {
+		res.status(400);
+		res.json({ success: false, error: `"${name}" is not a float` });
+		return undefined;
+	}
+	return parsed;
+}
+
 export function verifyPostBody(body: any, keys: string[], res: Response) {
 	for (const key of keys) {
 		if (body[key] === undefined) {

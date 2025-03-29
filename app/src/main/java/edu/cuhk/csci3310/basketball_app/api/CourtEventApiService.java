@@ -12,12 +12,12 @@ import retrofit2.http.Path;
 
 // This uses a homemade server
 public interface CourtEventApiService {
-    @GET("api/court/{court_id}/events")
-    Call<CourtEventListResponse> getCourtEvents(@Path(value = "court_id", encoded = true) int courtId);
+    @GET("api/court/{lat}/{lon}/events")
+    Call<CourtEventListResponse> getCourtEvents(@Path(value = "lat", encoded = true) String lat, @Path(value = "lon", encoded = true) String lon);
 
-    @GET("api/court/{court_id}/event/{event_id}")
-    Call<CourtEventResponse> getCourtEvent(@Path(value = "court_id", encoded = true) int courtId, @Path(value = "event_id", encoded = true) int eventId);
+    @GET("api/court/{lat}/{lon}/event/{event_id}")
+    Call<CourtEventResponse> getCourtEvent(@Path(value = "lat", encoded = true) String lat, @Path(value = "lon", encoded = true) String lon, @Path(value = "event_id", encoded = true) int eventId);
 
-    @POST("api/court/{court_id}/event")
-    Call<ServerResponse<Void>> addCourtEvent(@Path(value = "court_id", encoded = true) int courtId, @Body NewCourtEvent event);
+    @POST("api/court/{lat}/{lon}/event")
+    Call<ServerResponse<Void>> addCourtEvent(@Path(value = "lat", encoded = true) String lat, @Path(value = "lon", encoded = true) String lon, @Body NewCourtEvent event);
 }

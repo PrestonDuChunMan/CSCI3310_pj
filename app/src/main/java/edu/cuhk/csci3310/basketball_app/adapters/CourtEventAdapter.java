@@ -17,11 +17,12 @@ import edu.cuhk.csci3310.basketball_app.R;
 import edu.cuhk.csci3310.basketball_app.models.server.SimpleCourtEvent;
 
 public class CourtEventAdapter extends RecyclerView.Adapter<CourtEventAdapter.CourtEventViewHolder> {
-    private final int courtId;
+    private final double lat, lon;
     private List<SimpleCourtEvent> events;
 
-    public CourtEventAdapter(int courtId, List<SimpleCourtEvent> events) {
-        this.courtId = courtId;
+    public CourtEventAdapter(double lat, double lon, List<SimpleCourtEvent> events) {
+        this.lat = lat;
+        this.lon = lon;
         this.events = events;
     }
 
@@ -34,7 +35,7 @@ public class CourtEventAdapter extends RecyclerView.Adapter<CourtEventAdapter.Co
 
     @Override
     public void onBindViewHolder(@NonNull CourtEventViewHolder holder, int position) {
-        holder.setSimpleCourtEvent(this.courtId, this.events.get(position));
+        holder.setSimpleCourtEvent(this.lat, this.lon, this.events.get(position));
     }
 
     @Override
@@ -49,7 +50,8 @@ public class CourtEventAdapter extends RecyclerView.Adapter<CourtEventAdapter.Co
 
     public static class CourtEventViewHolder extends RecyclerView.ViewHolder {
         private final TextView titleView, timeView;
-        private int courtId, eventId;
+        private double lat, lon;
+        private int eventId;
         private boolean hasData;
 
         public CourtEventViewHolder(@NonNull View view) {
@@ -63,11 +65,12 @@ public class CourtEventAdapter extends RecyclerView.Adapter<CourtEventAdapter.Co
             view.findViewById(R.id.button_view).setOnClickListener(this::onClick);
         }
 
-        private void setSimpleCourtEvent(int courtId, SimpleCourtEvent event) {
+        private void setSimpleCourtEvent(double lat, double lon, SimpleCourtEvent event) {
             this.titleView.setText(event.getTitle());
             this.timeView.setText(event.getTime().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")));
 
-            this.courtId = courtId;
+            this.lat = lat;
+            this.lon = lon;
             this.eventId = event.getId();
             this.hasData = true;
         }
@@ -75,7 +78,8 @@ public class CourtEventAdapter extends RecyclerView.Adapter<CourtEventAdapter.Co
         private void onClick(View view) {
             if (!this.hasData) return;
             Intent intent = new Intent(view.getContext(), CourtEventActivity.class);
-            intent.putExtra("courtId", this.courtId);
+            intent.putExtra("lat", this.lat);
+            intent.putExtra("lon", this.lon);
             intent.putExtra("eventId", this.eventId);
             intent.putExtra("title", this.titleView.getText());
             intent.putExtra("time", this.timeView.getText());
