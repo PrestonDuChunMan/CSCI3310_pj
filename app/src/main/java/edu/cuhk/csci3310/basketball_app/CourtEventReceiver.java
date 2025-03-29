@@ -12,6 +12,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Handler;
 import android.util.Log;
+import android.widget.Toast;
 
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
@@ -19,6 +20,7 @@ import androidx.core.app.NotificationManagerCompat;
 
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Objects;
 
 import edu.cuhk.csci3310.basketball_app.room.BasketballDatabase;
 import edu.cuhk.csci3310.basketball_app.room.Subscription;
@@ -32,7 +34,9 @@ public class CourtEventReceiver extends BroadcastReceiver {
     public static final String CHANNEL_ID = "court_event";
 
     @Override
-    public void onReceive(Context context, Intent parent) {
+    public void onReceive(Context context, Intent intent) {
+        Log.d(TAG, "I received");
+
         NotificationManagerCompat compat = NotificationManagerCompat.from(context);
         compat.createNotificationChannel(new NotificationChannel(CourtEventReceiver.CHANNEL_ID, "Court Event Notification Channel", NotificationManager.IMPORTANCE_DEFAULT));
 
@@ -40,13 +44,13 @@ public class CourtEventReceiver extends BroadcastReceiver {
         SubscriptionDao dao = db.subscriptionDao();
         Handler mainHandler = new Handler(context.getMainLooper());
 
-        if (parent.hasExtra("id")) {
-            int id = parent.getIntExtra("id", -1);
+        if (intent.hasExtra("id")) {
+            int id = intent.getIntExtra("id", -1);
             if (id < 0) return;
-            String name = parent.getStringExtra("name");
-            String time = parent.getStringExtra("time");
-            long notifId = parent.getLongExtra("notifId", 0);
-            long offset = parent.getLongExtra("offset", -1);
+            String name = intent.getStringExtra("name");
+            String time = intent.getStringExtra("time");
+            long notifId = intent.getLongExtra("notifId", 0);
+            long offset = intent.getLongExtra("offset", -1);
             dao.get(id).doOnSuccess(subscription -> {
                 if (subscription.notifId != notifId) return;
                 mainHandler.post(() -> {
@@ -69,7 +73,7 @@ public class CourtEventReceiver extends BroadcastReceiver {
                 for (Subscription sub : list) {
                     mainHandler.post(() -> scheduleNotification(context, sub));
                 }
-                Log.d(TAG, "Scheduled " + list.size() + " notifications");
+                Log.d(TAG, "Processed " + list.size() + " events");
             }).subscribeOn(Schedulers.io()).subscribe();
         }
     }
@@ -98,11 +102,5 @@ public class CourtEventReceiver extends BroadcastReceiver {
             if (notifTime.isAfter(now))
                 alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, notifTime.toEpochSecond() * 1000, pending);
         }
-
-        new AlertDialog.Builder(context)
-                .setTitle(R.string.court_event_notif_title)
-                .setMessage(R.string.court_event_notif_desc)
-                .setPositiveButton(R.string.ok, (dialog, i) -> dialog.dismiss())
-                .show();
     }
 }
