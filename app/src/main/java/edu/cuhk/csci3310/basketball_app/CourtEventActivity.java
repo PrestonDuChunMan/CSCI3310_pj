@@ -3,6 +3,7 @@ package edu.cuhk.csci3310.basketball_app;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -20,7 +21,9 @@ import edu.cuhk.csci3310.basketball_app.room.BasketballDatabase;
 import edu.cuhk.csci3310.basketball_app.room.Subscription;
 import edu.cuhk.csci3310.basketball_app.room.SubscriptionDao;
 import io.reactivex.rxjava3.core.Completable;
+import io.reactivex.rxjava3.core.Maybe;
 import io.reactivex.rxjava3.core.Single;
+import io.reactivex.rxjava3.schedulers.Schedulers;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -92,18 +95,24 @@ public class CourtEventActivity extends AppCompatActivity {
             });
 
             // Check if device is subscribed to this event
-            Single<Subscription> single = this.subscriptionDao.get(this.mEventId);
-            single.doAfterSuccess(subscription -> {
-                subButton.setEnabled(true);
-                if (subscription == null) mSubbed = false;
-                else {
+            this.mSubbed = false;
+            Handler mainHandler = new Handler(this.getMainLooper());
+            Maybe<Subscription> maybe = this.subscriptionDao.get(this.mEventId);
+            maybe.doOnSuccess(subscription -> {
+                // this only gets called when subscription exist
+                mSubbed = true;
+                mainHandler.post(() -> {
                     subButton.setText(R.string.court_unsubscribe);
-                    mSubbed = true;
-                }
+                    subButton.setEnabled(true);
+                });
+            }).doOnComplete(() -> {
+                mainHandler.post(() -> subButton.setEnabled(true));
             }).doOnError(err -> {
                 Log.e(TAG, "Failed to check subscription", err);
-                Toast.makeText(this, "Something went wrong!", Toast.LENGTH_SHORT).show();
-            });
+                mainHandler.post(() -> {
+                    Toast.makeText(this, "Something went wrong!", Toast.LENGTH_SHORT).show();
+                });
+            }).subscribeOn(Schedulers.io()).subscribe();
 
             // Setup sub button click handler
             subButton.setOnClickListener(this::toggleSubscribe);
@@ -128,13 +137,20 @@ public class CourtEventActivity extends AppCompatActivity {
             Subscription sub = new Subscription(this.mEventId, this.mCourtId, this.mEvent.getTime());
             completable = subscriptionDao.insert(sub);
         }
+        Handler mainHandler = new Handler(this.getMainLooper());
         completable.doOnComplete(() -> {
             mSubbed = !mSubbed;
-            subButton.setText(mSubbed ? R.string.court_unsubscribe : R.string.court_subscribe);
-            Toast.makeText(this, getResources().getString(mSubbed ? R.string.court_subscribed : R.string.court_unsubscribed), Toast.LENGTH_SHORT).show();
+            mainHandler.post(() -> {
+                subButton.setText(mSubbed ? R.string.court_unsubscribe : R.string.court_subscribe);
+                Toast.makeText(this, getResources().getString(mSubbed ? R.string.court_subscribed : R.string.court_unsubscribed), Toast.LENGTH_SHORT).show();
+            });
         }).doOnError(err -> {
             Log.e(TAG, "Failed to toggle subscription", err);
-            Toast.makeText(this, "Something went wrong!", Toast.LENGTH_SHORT).show();
-        }).doFinally(() -> subButton.setEnabled(true));
+            mainHandler.post(() -> {
+                Toast.makeText(this, "Something went wrong!", Toast.LENGTH_SHORT).show();
+            });
+        }).doFinally(() -> {
+            mainHandler.post(() -> subButton.setEnabled(true));
+        }).subscribeOn(Schedulers.io()).subscribe();
     }
 }

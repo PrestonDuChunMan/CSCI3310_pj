@@ -7,6 +7,7 @@ import androidx.room.Query;
 import java.util.List;
 
 import io.reactivex.rxjava3.core.Completable;
+import io.reactivex.rxjava3.core.Maybe;
 import io.reactivex.rxjava3.core.Single;
 
 @Dao
@@ -15,7 +16,7 @@ public interface SubscriptionDao {
     Single<List<Subscription>> getAll();
 
     @Query("SELECT * FROM subscription WHERE eventId = :eventId")
-    Single<Subscription> get(int eventId);
+    Maybe<Subscription> get(int eventId);
 
     @Query("DELETE FROM subscription WHERE eventId = :eventId")
     Completable delete(int eventId);
