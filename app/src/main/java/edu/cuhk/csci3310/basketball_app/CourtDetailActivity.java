@@ -14,11 +14,14 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.stream.Collectors;
 
 import edu.cuhk.csci3310.basketball_app.adapters.CourtEventAdapter;
 import edu.cuhk.csci3310.basketball_app.api.ApiHandler;
 import edu.cuhk.csci3310.basketball_app.models.server.CourtEventListResponse;
 import edu.cuhk.csci3310.basketball_app.models.gov.Properties;
+import edu.cuhk.csci3310.basketball_app.models.server.SimpleCourtEvent;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -30,7 +33,6 @@ public class CourtDetailActivity extends AppCompatActivity {
     private TextView nSearch1View, nSearch2View, nSearch3View, nSearch4View, nSearch5View, nSearch6View;
     private RecyclerView recyclerView;
     private CourtEventAdapter adapter;
-    private Button addButton;
 
     private ApiHandler apiHandler;
 
@@ -67,10 +69,26 @@ public class CourtDetailActivity extends AppCompatActivity {
         this.recyclerView.setLayoutManager(new LinearLayoutManager(this));
         this.recyclerView.setAdapter(this.adapter);
 
-        this.addButton = findViewById(R.id.button_add_event);
-        this.addButton.setOnClickListener(this::addEvent);
-
         this.apiHandler = ApiHandler.getInstance();
+        this.refresh(recyclerView); // parameter doesn't matter
+    }
+
+    private void failureToast() {
+        this.failureToast("Failed to get court events");
+    }
+
+    private void failureToast(String reason) {
+        Toast.makeText(this, reason, Toast.LENGTH_SHORT).show();
+    }
+
+    public void addEvent(View view) {
+        Intent intent = new Intent(this.getApplicationContext(), CourtEventAddActivity.class);
+        intent.putExtra("courtId", this.mProperties.getId());
+        startActivity(intent);
+    }
+
+    public void refresh(View view) {
+        this.adapter.updateData(new ArrayList<>());
         Call<CourtEventListResponse> events = this.apiHandler.getCourtEvents(this.mProperties.getId());
         events.enqueue(new Callback<>() {
             @Override
@@ -87,7 +105,7 @@ public class CourtDetailActivity extends AppCompatActivity {
                     failureToast();
                     return;
                 }
-                adapter.updateData(res.getData());
+                adapter.updateData(res.getData().stream().sorted((a, b) -> b.getTime().compareTo(a.getTime())).collect(Collectors.toList()));
             }
 
             @Override
@@ -96,19 +114,5 @@ public class CourtDetailActivity extends AppCompatActivity {
                 failureToast();
             }
         });
-    }
-
-    private void failureToast() {
-        this.failureToast("Failed to get court events");
-    }
-
-    private void failureToast(String reason) {
-        Toast.makeText(this, reason, Toast.LENGTH_SHORT).show();
-    }
-
-    private void addEvent(View view) {
-        Intent intent = new Intent(this.getApplicationContext(), CourtEventAddActivity.class);
-        intent.putExtra("courtId", this.mProperties.getId());
-        startActivity(intent);
     }
 }

@@ -1,7 +1,15 @@
 package edu.cuhk.csci3310.basketball_app;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.AlarmManager;
+import android.app.AlertDialog;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -12,7 +20,12 @@ import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.app.NotificationCompat;
 import androidx.room.Room;
+
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 
 import edu.cuhk.csci3310.basketball_app.api.ApiHandler;
 import edu.cuhk.csci3310.basketball_app.models.server.CourtEventResponse;
@@ -53,7 +66,7 @@ public class CourtEventActivity extends AppCompatActivity {
         this.subButton = findViewById(R.id.button_subscribe);
 
         this.apiHandler = ApiHandler.getInstance();
-        BasketballDatabase db = Room.databaseBuilder(this.getApplicationContext(), BasketballDatabase.class, "basketball").build();
+        BasketballDatabase db = BasketballDatabase.getInstance(this.getApplicationContext());
         this.subscriptionDao = db.subscriptionDao();
 
         Intent intent = getIntent();
@@ -85,6 +98,9 @@ public class CourtEventActivity extends AppCompatActivity {
                     titleView.setText(mEvent.getTitle());
                     timeView.setText(mEvent.getFormattedTime());
                     descriptionView.setText(mEvent.getDescription());
+
+                    if (mEvent.getTime().isBefore(LocalDateTime.now()))
+                        subButton.setEnabled(false);
                 }
 
                 @Override
@@ -103,7 +119,8 @@ public class CourtEventActivity extends AppCompatActivity {
                 mSubbed = true;
                 mainHandler.post(() -> {
                     subButton.setText(R.string.court_unsubscribe);
-                    subButton.setEnabled(true);
+                    if (subscription.time.isAfter(LocalDateTime.now()))
+                        subButton.setEnabled(true);
                 });
             }).doOnComplete(() -> {
                 mainHandler.post(() -> subButton.setEnabled(true));
@@ -132,15 +149,20 @@ public class CourtEventActivity extends AppCompatActivity {
         if (this.mEventId < 0 || this.mCourtId < 0) return;
         this.subButton.setEnabled(false);
         Completable completable;
-        if (this.mSubbed) completable = subscriptionDao.delete(this.mEventId);
-        else {
-            Subscription sub = new Subscription(this.mEventId, this.mCourtId, this.mEvent.getTime());
+        long notifId;
+        if (this.mSubbed) {
+            notifId = 0;
+            completable = subscriptionDao.delete(this.mEventId);
+        } else {
+            Subscription sub = new Subscription(this.mEventId, this.mCourtId, this.titleView.getText().toString(), this.mEvent.getTime());
             completable = subscriptionDao.insert(sub);
+            notifId = sub.notifId;
         }
         Handler mainHandler = new Handler(this.getMainLooper());
         completable.doOnComplete(() -> {
             mSubbed = !mSubbed;
             mainHandler.post(() -> {
+                if (mSubbed) scheduleNotification(notifId);
                 subButton.setText(mSubbed ? R.string.court_unsubscribe : R.string.court_subscribe);
                 Toast.makeText(this, getResources().getString(mSubbed ? R.string.court_subscribed : R.string.court_unsubscribed), Toast.LENGTH_SHORT).show();
             });
@@ -152,5 +174,52 @@ public class CourtEventActivity extends AppCompatActivity {
         }).doFinally(() -> {
             mainHandler.post(() -> subButton.setEnabled(true));
         }).subscribeOn(Schedulers.io()).subscribe();
+    }
+
+    private void scheduleNotification(long notifId) {
+        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[] {Manifest.permission.POST_NOTIFICATIONS}, 0);
+        }
+
+            Intent intent = new Intent(this.getApplicationContext(), CourtEventReceiver.class);
+        intent.putExtra("id", this.mEventId);
+        intent.putExtra("name", this.mEvent.getTitle());
+        intent.putExtra("time", this.mEvent.getFormattedTime());
+        intent.putExtra("notifId", notifId);
+
+        PendingIntent pending = PendingIntent.getBroadcast(
+                this.getApplicationContext(),
+                CourtEventReceiver.NOTIFICATION_ID,
+                intent,
+                PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT
+        );
+
+        new AlertDialog.Builder(this)
+                .setTitle(R.string.court_event_notif_title)
+                .setMessage(R.string.court_event_notif_desc)
+                .setPositiveButton(R.string.ok, (dialog, i) -> dialog.dismiss())
+                .show();
+
+        AlarmManager alarmManager = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
+        if (alarmManager.canScheduleExactAlarms()) {
+            Log.d(TAG, "scheduling notification");
+            long now = LocalDateTime.now().toEpochSecond(ZoneOffset.UTC);
+            // set 1 week
+            long offset = this.mEvent.getTime().toEpochSecond(ZoneOffset.UTC) - (60 * 60 * 24 * 7) - now;
+            if (offset > 0)
+                alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, offset * 1000, pending);
+            // set 1 day
+            offset = this.mEvent.getTime().toEpochSecond(ZoneOffset.UTC) - (60 * 60 * 24) - now;
+            if (offset > 0)
+                alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, offset * 1000, pending);
+            // set 1 hour
+            offset = this.mEvent.getTime().toEpochSecond(ZoneOffset.UTC) - (60 * 60) - now;
+            if (offset > 0)
+                alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, offset * 1000, pending);
+            // set exact
+            offset = this.mEvent.getTime().toEpochSecond(ZoneOffset.UTC) - now;
+            Log.d(TAG, "offset: "+ offset);
+            alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, offset * 1000, pending);
+        }
     }
 }

@@ -8,18 +8,25 @@ import androidx.room.TypeConverters;
 
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.util.Random;
 
 @Entity
 @TypeConverters(Subscription.LocalDateTimeConverter.class)
 public class Subscription {
+    private static final Random RNG = new Random();
+
     @PrimaryKey
     public int eventId;
     public int courtId;
+    public long notifId;
+    public String name;
     public LocalDateTime time;
 
-    public Subscription(int eventId, int courtId, LocalDateTime time) {
+    public Subscription(int eventId, int courtId, String name, LocalDateTime time) {
         this.eventId = eventId;
         this.courtId = courtId;
+        this.notifId = RNG.nextLong();
+        this.name = name;
         this.time = time;
     }
 

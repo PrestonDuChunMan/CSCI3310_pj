@@ -9,6 +9,7 @@
     <string name="court_name">Name</string>
     <string name="court_address">Address</string>
     <string name="court_add_event">+ Add Event</string>
+    <string name="court_refresh">Refresh</string>
     <string name="court_event_view">View</string>
     <string name="court_subscribe">Subscribe</string>
     <string name="court_unsubscribe">Unsubscribe</string>
@@ -21,8 +22,12 @@
     <string name="court_event_add_time_change">Change</string>
     <string name="court_event_add_description">Description</string>
 
+    <string name="court_event_notif_title">Notifications Scheduled</string>
+    <string name="court_event_notif_desc">You will be notified 1 week, day, hour before and when the event happens</string>
+
     <string name="add">Add</string>
     <string name="cancel">Cancel</string>
+    <string name="ok">Okay</string>
 
     <string name="placeholder">Placeholder</string>
 </resources>
