@@ -1,9 +1,14 @@
 package edu.cuhk.csci3310.basketball_app;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Typeface;
 import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.speech.RecognitionListener;
+import android.speech.RecognizerIntent;
+import android.speech.SpeechRecognizer;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -13,6 +18,8 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import android.os.CountDownTimer;
@@ -21,6 +28,8 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.drawerlayout.widget.DrawerLayout;
 import android.widget.SeekBar;
 import android.content.SharedPreferences; //preseve game when user exit app
+
+import java.util.ArrayList;
 
 
 public class GameStateTrackerActivity extends AppCompatActivity {
@@ -83,6 +92,10 @@ public class GameStateTrackerActivity extends AppCompatActivity {
     //for touch feature
     private boolean isLandscapeMode = false;
 
+    // for voice command
+    private boolean isVoiceEnabled = false;
+    private static final int REQUEST_PERMISSION_RECORD_AUDIO = 3; // arbitary number
+    private SpeechRecognizer speechRecognizer;
 
     // Save the current game state to SharedPreferences
     private void saveGameState() {
@@ -478,6 +491,24 @@ public class GameStateTrackerActivity extends AppCompatActivity {
                 drawerLayout.openDrawer(findViewById(R.id.settings_drawer));
             }
             return true;
+        }
+        else if (itemId == R.id.action_voice_toggle) {
+            isVoiceEnabled = !isVoiceEnabled;
+
+            if (isVoiceEnabled) {
+                if (checkSelfPermission(Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+                    requestPermissions(new String[]{Manifest.permission.RECORD_AUDIO}, REQUEST_PERMISSION_RECORD_AUDIO);
+                } else if (!SpeechRecognizer.isRecognitionAvailable(this)) {
+                    Toast.makeText(this, "Speech recognition is not available", Toast.LENGTH_SHORT).show();
+                    isVoiceEnabled = false;
+                } else {
+                    setupSpeechRecognizer();
+                    Toast.makeText(this, "Voice command enabled", Toast.LENGTH_SHORT).show();
+                }
+            } else {
+                if (speechRecognizer != null) speechRecognizer.stopListening();
+                Toast.makeText(this, "Voice command disabled", Toast.LENGTH_SHORT).show();
+            }
         }
         return super.onOptionsItemSelected(item);
     }
@@ -916,5 +947,74 @@ public class GameStateTrackerActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         releaseMediaPlayers();
+    }
+
+    private void setupSpeechRecognizer() {
+        if (speechRecognizer == null) speechRecognizer = SpeechRecognizer.createSpeechRecognizer(this);
+        speechRecognizer.setRecognitionListener(new RecognitionListener() {
+            @Override
+            public void onReadyForSpeech(Bundle bundle) {
+
+            }
+
+            @Override
+            public void onBeginningOfSpeech() {
+
+            }
+
+            @Override
+            public void onRmsChanged(float v) {
+
+            }
+
+            @Override
+            public void onBufferReceived(byte[] bytes) {
+
+            }
+
+            @Override
+            public void onEndOfSpeech() {
+
+            }
+
+            @Override
+            public void onError(int i) {
+
+            }
+
+            @Override
+            public void onResults(Bundle bundle) {
+                ArrayList<String> result = bundle.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
+                if (result != null) Log.d("VOICE_COMMAND", String.join(" ", result)); // log it for testing as of now
+            }
+
+            @Override
+            public void onPartialResults(Bundle bundle) {
+
+            }
+
+            @Override
+            public void onEvent(int i, Bundle bundle) {
+
+            }
+        });
+
+        Intent recognizerIntent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+        recognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_WEB_SEARCH);
+        recognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, "en-US");
+        speechRecognizer.startListening(recognizerIntent);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == REQUEST_PERMISSION_RECORD_AUDIO) {
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                setupSpeechRecognizer();
+            } else {
+                isVoiceEnabled = false;
+                Toast.makeText(this, "No permissions for voice command", Toast.LENGTH_SHORT).show();
+            }
+        }
     }
 }
