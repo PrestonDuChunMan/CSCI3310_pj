@@ -7,13 +7,43 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <TextView
+
+    <Button
+        android:id="@+id/btnGameState"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Hello World!"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:text="Game State Tracker"
+        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/btnPlayerStats"
+        android:layout_marginTop="40dp"/>
+
+    <!-- Button to navigate to PlayerStatisticsActivity -->
+    <Button
+        android:id="@+id/btnPlayerStats"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Player Statistics"
+        app:layout_constraintTop_toBottomOf="@+id/btnGameState"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/btnCourtFinder"
+        android:layout_marginTop="20dp"/>
+
+    <!-- Button to navigate to CourtFinderActivity -->
+    <Button
+        android:id="@+id/btnCourtFinder"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Court Finder"
+        app:layout_constraintTop_toBottomOf="@+id/btnPlayerStats"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginTop="20dp"/>
+
+
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
