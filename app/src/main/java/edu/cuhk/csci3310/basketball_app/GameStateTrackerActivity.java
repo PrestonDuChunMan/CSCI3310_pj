@@ -30,6 +30,9 @@ import android.widget.SeekBar;
 import android.content.SharedPreferences; //preseve game when user exit app
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
 
 
 public class GameStateTrackerActivity extends AppCompatActivity {
@@ -959,7 +962,7 @@ public class GameStateTrackerActivity extends AppCompatActivity {
 
             @Override
             public void onBeginningOfSpeech() {
-
+                Log.d("VOICE_COMMAND", "Speech begins");
             }
 
             @Override
@@ -974,18 +977,65 @@ public class GameStateTrackerActivity extends AppCompatActivity {
 
             @Override
             public void onEndOfSpeech() {
-
+                Log.d("VOICE_COMMAND", "Speech ends");
             }
 
             @Override
-            public void onError(int i) {
-
+            public void onError(int errCode) {
+                // this happens when timed out
+                if (errCode == SpeechRecognizer.ERROR_NO_MATCH && isVoiceEnabled)
+                    setupSpeechRecognizer();
             }
 
             @Override
             public void onResults(Bundle bundle) {
                 ArrayList<String> result = bundle.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
-                if (result != null) Log.d("VOICE_COMMAND", String.join(" ", result)); // log it for testing as of now
+                if (result != null) {
+                    List<String> words = new ArrayList<>();
+                    result.forEach(sentence -> words.addAll(Arrays.asList(sentence.split("\\s+"))));
+                    Optional<Boolean> add = Optional.empty(), home = Optional.empty();
+                    Optional<Integer> points = Optional.empty();
+                    boolean listenPointNext = false;
+                    for (String word : words) {
+                        Log.d("VOICE_COMMAND", "processing: " + word);
+                        if (listenPointNext) {
+                            // observation: if the number is single digit, it's spelled out in english. if >= 10, it uses digits
+                            points = tryParseInt(word);
+                            listenPointNext = false;
+                        }
+                        if (add.isEmpty()) {
+                            if (word.equalsIgnoreCase("add") || word.equalsIgnoreCase("plus")) {
+                                add = Optional.of(true);
+                                listenPointNext = true;
+                            } else if (word.equalsIgnoreCase("minus") || word.equalsIgnoreCase("deduct")) {
+                                add = Optional.of(false);
+                                listenPointNext = true;
+                            }
+                        }
+                        if (home.isEmpty()) {
+                            if (word.equalsIgnoreCase("home"))
+                                home = Optional.of(true);
+                            else if (word.equalsIgnoreCase("away"))
+                                home = Optional.of(false);
+                        }
+                        if (word.startsWith("+")) {
+                            add = Optional.of(true);
+                            points = tryParseInt(word.substring(1));
+                            if (points.isEmpty()) listenPointNext = true;
+                        } else if (word.startsWith("-")) {
+                            add = Optional.of(false);
+                            points = tryParseInt(word.substring(1));
+                            if (points.isEmpty()) listenPointNext = true;
+                        }
+                    }
+                    if (add.isPresent() && home.isPresent() && points.isPresent()) {
+                        int p = points.get();
+                        if (home.get()) updateHomeScore(homeScore + p * (add.get() ? 1 : -1));
+                        else updateAwayScore(awayScore + p * (add.get() ? 1 : -1));
+                    }
+                }
+                // perpetual speech recognizer
+                if (isVoiceEnabled) setupSpeechRecognizer();
             }
 
             @Override
@@ -1015,6 +1065,31 @@ public class GameStateTrackerActivity extends AppCompatActivity {
                 isVoiceEnabled = false;
                 Toast.makeText(this, "No permissions for voice command", Toast.LENGTH_SHORT).show();
             }
+        }
+    }
+
+    private Optional<Integer> tryParseInt(String word) {
+        String[][] digits = {
+                {"zero"},
+                {"one"},
+                {"two", "to", "two", "tool"},
+                {"three", "free"},
+                {"four", "for"},
+                {"five"},
+                {"six"},
+                {"seven"},
+                {"eight"},
+                {"nine"}
+        };
+        try {
+            for (int ii = 0; ii < digits.length; ii++) {
+                for (int jj = 0; jj < digits[ii].length; jj++)
+                    if (word.equalsIgnoreCase(digits[ii][jj]))
+                        return Optional.of(ii);
+            }
+            return Optional.of(Integer.parseInt(word));
+        } catch (NumberFormatException e) {
+            return Optional.empty();
         }
     }
 }
