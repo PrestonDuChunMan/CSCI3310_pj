@@ -8,7 +8,7 @@ android {
 
     defaultConfig {
         applicationId "edu.cuhk.csci3310.basketball_app"
-        minSdk 34
+        minSdk 33
         targetSdk 35
         versionCode 1
         versionName "1.0"
@@ -37,4 +37,12 @@ dependencies {
     testImplementation libs.junit
     androidTestImplementation libs.ext.junit
     androidTestImplementation libs.espresso.core
+
+    implementation libs.osmdroid.android
+    implementation libs.retrofit
+    implementation libs.converter.gson
+    implementation libs.room.runtime
+    annotationProcessor libs.room.compiler
+    implementation libs.room.rxjava3
+    implementation libs.core.ktx
 }

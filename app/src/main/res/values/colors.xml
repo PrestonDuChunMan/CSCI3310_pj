@@ -2,4 +2,8 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="osm_search_box">#FF005500</color>
+    <color name="osm_search">#FF3A683B</color>
+    <color name="osm_search_results">#ffd9eadb</color>
+    <color name="osm_hr">#ff7f7f7f</color>
 </resources>

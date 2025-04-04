@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="8dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <TextView
+        android:id="@+id/title_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_margin="8dp"
+        android:textSize="16dp"
+        android:text="@string/court_name"
+        />
+
+    <TextView
+        android:id="@+id/value_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/title_name"
+        android:textSize="24dp"
+        android:text="placeholder"
+        />
+
+    <TextView
+        android:id="@+id/title_address"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/value_name"
+        android:layout_margin="8dp"
+        android:textSize="16dp"
+        android:text="@string/court_address"
+        />
+
+    <TextView
+        android:id="@+id/value_address"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/title_address"
+        android:textSize="24dp"
+        android:text="placeholder"
+        />
+
+    <TextView
+        android:id="@+id/value_nsearch1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/value_address"
+        android:textSize="20dp"
+        android:text="placeholder"
+        />
+
+    <TextView
+        android:id="@+id/value_nsearch2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/value_nsearch1"
+        android:textSize="20dp"
+        android:text="placeholder"
+        />
+
+    <TextView
+        android:id="@+id/value_nsearch3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/value_nsearch2"
+        android:textSize="20dp"
+        android:text="placeholder"
+        />
+
+    <TextView
+        android:id="@+id/value_nsearch4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/value_nsearch3"
+        android:textSize="20dp"
+        android:text="placeholder"
+        />
+
+    <TextView
+        android:id="@+id/value_nsearch5"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/value_nsearch4"
+        android:textSize="20dp"
+        android:text="placeholder"
+        />
+
+    <TextView
+        android:id="@+id/value_nsearch6"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/value_nsearch5"
+        android:textSize="20dp"
+        android:text="placeholder"
+        />
+
+    <LinearLayout
+        android:id="@+id/box_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/value_nsearch6"
+        android:orientation="horizontal"
+        android:gravity="center_horizontal"
+        android:weightSum="2"
+        >
+
+        <Button
+            android:id="@+id/button_add_event"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/button_refresh"
+            app:layout_constraintTop_toBottomOf="@id/value_nsearch6"
+            android:text="@string/court_add_event"
+            android:layout_margin="8dp"
+            android:onClick="addEvent"
+            />
+
+        <Button
+            android:id="@+id/button_refresh"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            app:layout_constraintStart_toEndOf="@id/button_add_event"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/button_add_event"
+            app:layout_constraintBottom_toBottomOf="@id/button_add_event"
+            android:text="@string/court_refresh"
+            android:onClick="refresh"
+            android:layout_margin="8dp"
+            />
+    </LinearLayout>
+    
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/list_event"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/box_button"
+        />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
