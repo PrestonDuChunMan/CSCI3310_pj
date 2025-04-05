@@ -1,4 +1,4 @@
 package edu.cuhk.csci3310.basketball_app;
 
-public class PlayerStatsActivity {
+public class PlayerStatsAdapter {
 }
