@@ -40,9 +40,45 @@
         app:layout_constraintTop_toBottomOf="@+id/btnPlayerStats"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/btnGameStatsCounter"
         android:layout_marginTop="20dp"/>
 
+    <!-- Button to navigate to Game Stats Counter -->
+    <Button
+        android:id="@+id/btnGameStatsCounter"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Player Stats Counter"
+        app:layout_constraintTop_toBottomOf="@+id/btnCourtFinder"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/btnGameStats"
+        android:layout_marginTop="20dp"/>
+
+    <!-- Button to navigate to Game Stats -->
+    <Button
+        android:id="@+id/btnGameStats"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Game Records"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/btnPlayerList"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="40dp"/>
+
+    <!-- Button to navigate to PlayerListActivity -->
+    <Button
+        android:id="@+id/btnPlayerList"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Player Averages"
+        app:layout_constraintTop_toBottomOf="@+id/btnGameStatsCounter"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+
+        android:layout_marginTop="20dp"/>
 
 
 
