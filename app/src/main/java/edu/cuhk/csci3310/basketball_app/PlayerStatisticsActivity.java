@@ -24,3 +24,5 @@ public class PlayerStatisticsActivity extends AppCompatActivity {
         statsTextView.setText("Player: John Doe\nPoints: 12\nAssists: 5\nRebounds: 7");
     }
 }
+
+//DUMMY

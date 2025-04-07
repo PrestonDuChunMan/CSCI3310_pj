@@ -1,6 +1,119 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-             android:layout_width="match_parent"
-             android:layout_height="match_parent">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <HorizontalScrollView
+        android:id="@+id/playerStatsScrollView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:scrollbars="none">
+
+        <TableLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="5dp">
+
+            <TableRow>
+                <TextView
+                    android:id="@+id/playerNameTextView"
+                    android:layout_width="70dp"
+                    android:layout_height="wrap_content"
+                    android:text="Player Name"
+                    android:padding="4dp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/pointsTextView"
+                    android:layout_width="50dp"
+                    android:layout_height="wrap_content"
+                    android:text="0"
+                    android:padding="4dp" />
+
+                <TextView
+                    android:id="@+id/fgTextView"
+                    android:layout_width="65dp"
+                    android:layout_height="wrap_content"
+                    android:text="0/0"
+                    android:padding="4dp" />
+
+                <TextView
+                    android:id="@+id/fgPercentageTextView"
+                    android:layout_width="65dp"
+                    android:layout_height="wrap_content"
+                    android:text="0.0%"
+                    android:padding="4dp" />
+
+                <TextView
+                    android:id="@+id/tptTextView"
+                    android:layout_width="65dp"
+                    android:layout_height="wrap_content"
+                    android:text="0/0"
+                    android:padding="4dp" />
+
+                <TextView
+                    android:id="@+id/tptPercentageTextView"
+                    android:layout_width="65dp"
+                    android:layout_height="wrap_content"
+                    android:text="0.0%"
+                    android:padding="4dp" />
+
+                <TextView
+                    android:id="@+id/ftTextView"
+                    android:layout_width="65dp"
+                    android:layout_height="wrap_content"
+                    android:text="0/0"
+                    android:padding="4dp" />
+
+                <TextView
+                    android:id="@+id/ftPercentageTextView"
+                    android:layout_width="65dp"
+                    android:layout_height="wrap_content"
+                    android:text="0.0%"
+                    android:padding="4dp" />
+
+                <TextView
+                    android:id="@+id/reboundsTextView"
+                    android:layout_width="50dp"
+                    android:layout_height="wrap_content"
+                    android:text="0"
+                    android:padding="4dp" />
+
+                <TextView
+                    android:id="@+id/assistsTextView"
+                    android:layout_width="50dp"
+                    android:layout_height="wrap_content"
+                    android:text="0"
+                    android:padding="4dp" />
+
+                <TextView
+                    android:id="@+id/stealsTextView"
+                    android:layout_width="50dp"
+                    android:layout_height="wrap_content"
+                    android:text="0"
+                    android:padding="4dp" />
+
+                <TextView
+                    android:id="@+id/blocksTextView"
+                    android:layout_width="50dp"
+                    android:layout_height="wrap_content"
+                    android:text="0"
+                    android:padding="4dp" />
+
+                <TextView
+                    android:id="@+id/turnoversTextView"
+                    android:layout_width="50dp"
+                    android:layout_height="wrap_content"
+                    android:text="0"
+                    android:padding="4dp" />
+            </TableRow>
+        </TableLayout>
+    </HorizontalScrollView>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#DDDDDD"
+        android:layout_marginTop="8dp" />
+</LinearLayout>

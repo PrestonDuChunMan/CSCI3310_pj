@@ -57,6 +57,15 @@
             android:name=".GameStateTrackerActivity"
             android:exported="false" />
         <activity
+            android:name=".GameStatsDisplayActivity"
+            android:exported="false" />
+        <activity
+            android:name=".GameDetailsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".PlayerListActivity"
+            android:exported="false" />
+        <activity
             android:name=".MainActivity"
             android:exported="true">
             <intent-filter>

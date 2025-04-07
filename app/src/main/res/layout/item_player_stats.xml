@@ -1,6 +1,368 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<HorizontalScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/playerStatsScrollView"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="wrap_content"
+    android:fillViewport="true"
+    android:scrollbars="none">
 
-</LinearLayout>
+    <TableLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="5dp"
+        android:stretchColumns="*">
+
+        <TableRow>
+            <TextView
+                android:id="@+id/playerNameTextView"
+                android:layout_width="70dp"
+                android:layout_height="wrap_content"
+                android:text="Player Name"
+                android:padding="4dp" />
+
+            <TextView
+                android:id="@+id/pointsTextView"
+                android:layout_width="50dp"
+                android:layout_height="wrap_content"
+                android:text="0"
+                android:padding="4dp" />
+
+            <!-- FG Made -->
+            <LinearLayout
+                android:layout_width="65dp"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:gravity="center_horizontal">
+                <TextView
+                    android:id="@+id/madeFGTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="0"
+                    android:padding="4dp" />
+                <Button
+                    android:id="@+id/madeFGButton"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:text="+"
+                    android:textSize="12sp"
+                    android:minWidth="0dp"
+                    android:minHeight="0dp"
+                    android:paddingStart="0dp"
+                    android:paddingEnd="0dp"
+                    android:paddingTop="0dp"
+                    android:paddingBottom="0dp" />
+            </LinearLayout>
+
+            <!-- FG Missed -->
+            <LinearLayout
+                android:layout_width="65dp"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:gravity="center_horizontal">
+                <TextView
+                    android:id="@+id/missedFGTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="0"
+                    android:padding="4dp" />
+                <Button
+                    android:id="@+id/missedFGButton"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:text="+"
+                    android:textSize="12sp"
+                    android:minWidth="0dp"
+                    android:minHeight="0dp"
+                    android:paddingStart="0dp"
+                    android:paddingEnd="0dp"
+                    android:paddingTop="0dp"
+                    android:paddingBottom="0dp" />
+            </LinearLayout>
+
+            <!-- 3PT Made -->
+            <LinearLayout
+                android:layout_width="70dp"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:gravity="center_horizontal">
+                <TextView
+                    android:id="@+id/made3PTTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="0"
+                    android:padding="4dp" />
+                <Button
+                    android:id="@+id/made3PTButton"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:text="+"
+                    android:textSize="12sp"
+                    android:minWidth="0dp"
+                    android:minHeight="0dp"
+                    android:paddingStart="0dp"
+                    android:paddingEnd="0dp"
+                    android:paddingTop="0dp"
+                    android:paddingBottom="0dp" />
+            </LinearLayout>
+
+            <!-- 3PT Missed -->
+            <LinearLayout
+                android:layout_width="65dp"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:gravity="center_horizontal">
+                <TextView
+                    android:id="@+id/missed3PTTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="0"
+                    android:padding="4dp" />
+                <Button
+                    android:id="@+id/missed3PTButton"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:text="+"
+                    android:textSize="12sp"
+                    android:minWidth="0dp"
+                    android:minHeight="0dp"
+                    android:paddingStart="0dp"
+                    android:paddingEnd="0dp"
+                    android:paddingTop="0dp"
+                    android:paddingBottom="0dp" />
+            </LinearLayout>
+
+            <!-- Rebounds -->
+            <LinearLayout
+                android:layout_width="50dp"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:gravity="center_horizontal">
+                <TextView
+                    android:id="@+id/reboundsTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="0"
+                    android:padding="4dp" />
+                <Button
+                    android:id="@+id/reboundsButton"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:text="+"
+                    android:textSize="12sp"
+                    android:minWidth="0dp"
+                    android:minHeight="0dp"
+                    android:paddingStart="0dp"
+                    android:paddingEnd="0dp"
+                    android:paddingTop="0dp"
+                    android:paddingBottom="0dp" />
+            </LinearLayout>
+
+            <!-- Assists -->
+            <LinearLayout
+                android:layout_width="50dp"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:gravity="center_horizontal">
+                <TextView
+                    android:id="@+id/assistsTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="0"
+                    android:padding="4dp" />
+                <Button
+                    android:id="@+id/assistsButton"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:text="+"
+                    android:textSize="12sp"
+                    android:minWidth="0dp"
+                    android:minHeight="0dp"
+                    android:paddingStart="0dp"
+                    android:paddingEnd="0dp"
+                    android:paddingTop="0dp"
+                    android:paddingBottom="0dp" />
+            </LinearLayout>
+
+            <!-- Steals -->
+            <LinearLayout
+                android:layout_width="50dp"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:gravity="center_horizontal">
+                <TextView
+                    android:id="@+id/stealsTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="0"
+                    android:padding="4dp" />
+                <Button
+                    android:id="@+id/stealsButton"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:text="+"
+                    android:textSize="12sp"
+                    android:minWidth="0dp"
+                    android:minHeight="0dp"
+                    android:paddingStart="0dp"
+                    android:paddingEnd="0dp"
+                    android:paddingTop="0dp"
+                    android:paddingBottom="0dp" />
+            </LinearLayout>
+
+            <!-- Blocks -->
+            <LinearLayout
+                android:layout_width="50dp"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:gravity="center_horizontal">
+                <TextView
+                    android:id="@+id/blocksTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="0"
+                    android:padding="4dp" />
+                <Button
+                    android:id="@+id/blocksButton"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:text="+"
+                    android:textSize="12sp"
+                    android:minWidth="0dp"
+                    android:minHeight="0dp"
+                    android:paddingStart="0dp"
+                    android:paddingEnd="0dp"
+                    android:paddingTop="0dp"
+                    android:paddingBottom="0dp" />
+            </LinearLayout>
+
+            <!-- Turnovers -->
+            <LinearLayout
+                android:layout_width="50dp"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:gravity="center_horizontal">
+                <TextView
+                    android:id="@+id/turnoversTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="0"
+                    android:padding="4dp" />
+                <Button
+                    android:id="@+id/turnoversButton"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:text="+"
+                    android:textSize="12sp"
+                    android:minWidth="0dp"
+                    android:minHeight="0dp"
+                    android:paddingStart="0dp"
+                    android:paddingEnd="0dp"
+                    android:paddingTop="0dp"
+                    android:paddingBottom="0dp" />
+            </LinearLayout>
+
+            <!-- FT Made -->
+            <LinearLayout
+                android:layout_width="65dp"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:gravity="center_horizontal">
+                <TextView
+                    android:id="@+id/madeFTTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="0"
+                    android:padding="4dp" />
+                <Button
+                    android:id="@+id/madeFTButton"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:text="+"
+                    android:textSize="12sp"
+                    android:minWidth="0dp"
+                    android:minHeight="0dp"
+                    android:paddingStart="0dp"
+                    android:paddingEnd="0dp"
+                    android:paddingTop="0dp"
+                    android:paddingBottom="0dp" />
+            </LinearLayout>
+
+            <!-- FT Missed -->
+            <LinearLayout
+                android:layout_width="65dp"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:gravity="center_horizontal">
+                <TextView
+                    android:id="@+id/missedFTTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="0"
+                    android:padding="4dp" />
+                <Button
+                    android:id="@+id/missedFTButton"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:text="+"
+                    android:textSize="12sp"
+                    android:minWidth="0dp"
+                    android:minHeight="0dp"
+                    android:paddingStart="0dp"
+                    android:paddingEnd="0dp"
+                    android:paddingTop="0dp"
+                    android:paddingBottom="0dp" />
+            </LinearLayout>
+
+            <!-- FGA -->
+            <TextView
+                android:id="@+id/fgaTextView"
+                android:layout_width="45dp"
+                android:layout_height="wrap_content"
+                android:text="0"
+                android:padding="4dp" />
+
+            <!-- FG% -->
+            <TextView
+                android:id="@+id/fgPercentageTextView"
+                android:layout_width="55dp"
+                android:layout_height="wrap_content"
+                android:text="0.0%"
+                android:padding="4dp"
+                android:singleLine="true" />
+
+            <!-- 3PTA -->
+            <TextView
+                android:id="@+id/tptaTextView"
+                android:layout_width="45dp"
+                android:layout_height="wrap_content"
+                android:text="0"
+                android:padding="4dp" />
+
+            <!-- 3PT% -->
+            <TextView
+                android:id="@+id/tptPercentageTextView"
+                android:layout_width="55dp"
+                android:layout_height="wrap_content"
+                android:text="0.0%"
+                android:padding="4dp"
+                android:singleLine="true" />
+
+            <!-- FTA -->
+            <TextView
+                android:id="@+id/ftaTextView"
+                android:layout_width="45dp"
+                android:layout_height="wrap_content"
+                android:text="0"
+                android:padding="4dp" />
+
+            <!-- FT% -->
+            <TextView
+                android:id="@+id/ftPercentageTextView"
+                android:layout_width="55dp"
+                android:layout_height="wrap_content"
+                android:text="0.0%"
+                android:padding="4dp"
+                android:singleLine="true" />
+        </TableRow>
+    </TableLayout>
+</HorizontalScrollView>

@@ -2,9 +2,303 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".PlayerStatsCounterActivity">
+
+    <LinearLayout
+        android:id="@+id/gameDetailsLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="5dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <EditText
+            android:id="@+id/gameNameEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="15dp"
+            android:hint="Game Name" />
+
+    </LinearLayout>
+
+    <!-- Team Score Comparison -->
+    <LinearLayout
+        android:id="@+id/scoreComparisonLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:padding="8dp"
+        android:background="#F5F5F5"
+        app:layout_constraintTop_toBottomOf="@id/gameDetailsLayout">
+
+        <TextView
+            android:id="@+id/teamANameScoreTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Team A"
+            android:textStyle="bold"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/teamAScoreTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="0"
+            android:textStyle="bold"
+            android:textSize="18sp"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="24dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="-"
+            android:textStyle="bold"
+            android:textSize="18sp" />
+
+        <TextView
+            android:id="@+id/teamBScoreTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="0"
+            android:textStyle="bold"
+            android:textSize="18sp"
+            android:layout_marginStart="24dp"
+            android:layout_marginEnd="8dp" />
+
+        <TextView
+            android:id="@+id/teamBNameScoreTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Team B"
+            android:textStyle="bold"
+            android:textSize="16sp" />
+    </LinearLayout>
+
+
+    <HorizontalScrollView
+        android:id="@+id/statsHeaderScrollView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#E0E0E0"
+        app:layout_constraintTop_toBottomOf="@id/scoreComparisonLayout">
+
+        <TableLayout
+            android:id="@+id/statsHeaderTable"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="5dp"
+            android:stretchColumns="*">
+
+            <TableRow>
+                <TextView
+                    android:layout_width="70dp"
+                    android:layout_height="wrap_content"
+                    android:text="Name"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:padding="4dp" />
+
+                <TextView
+                    android:layout_width="50dp"
+                    android:layout_height="wrap_content"
+                    android:text="PTS"
+                    android:textStyle="bold"
+                    android:padding="4dp" />
+
+                <TextView
+                    android:layout_width="65dp"
+                    android:layout_height="wrap_content"
+                    android:text="FGMade"
+                    android:textStyle="bold"
+                    android:padding="4dp" />
+
+                <TextView
+                    android:layout_width="65dp"
+                    android:layout_height="wrap_content"
+                    android:text="FGMiss"
+                    android:textStyle="bold"
+                    android:padding="4dp" />
+
+                <!-- Rearranged stats according to your preference -->
+                <TextView
+                    android:layout_width="70dp"
+                    android:layout_height="wrap_content"
+                    android:text="3PTMade"
+                    android:textStyle="bold"
+                    android:padding="4dp" />
+
+                <TextView
+                    android:layout_width="65dp"
+                    android:layout_height="wrap_content"
+                    android:text="3PTMiss"
+                    android:textStyle="bold"
+                    android:padding="4dp" />
+
+                <TextView
+                    android:layout_width="50dp"
+                    android:layout_height="wrap_content"
+                    android:text="REB"
+                    android:textStyle="bold"
+                    android:padding="4dp" />
+
+                <TextView
+                    android:layout_width="50dp"
+                    android:layout_height="wrap_content"
+                    android:text="AST"
+                    android:textStyle="bold"
+                    android:padding="4dp" />
+
+                <TextView
+                    android:layout_width="50dp"
+                    android:layout_height="wrap_content"
+                    android:text="STL"
+                    android:textStyle="bold"
+                    android:padding="4dp" />
+
+                <TextView
+                    android:layout_width="50dp"
+                    android:layout_height="wrap_content"
+                    android:text="BLK"
+                    android:textStyle="bold"
+                    android:padding="4dp" />
+
+                <TextView
+                    android:layout_width="50dp"
+                    android:layout_height="wrap_content"
+                    android:text="TO"
+                    android:textStyle="bold"
+                    android:padding="4dp" />
+
+                <TextView
+                    android:layout_width="65dp"
+                    android:layout_height="wrap_content"
+                    android:text="FTMade"
+                    android:textStyle="bold"
+                    android:padding="4dp" />
+
+                <TextView
+                    android:layout_width="65dp"
+                    android:layout_height="wrap_content"
+                    android:text="FTMiss"
+                    android:textStyle="bold"
+                    android:padding="4dp" />
+
+                <TextView
+                    android:layout_width="45dp"
+                    android:layout_height="wrap_content"
+                    android:text="FGA"
+                    android:textStyle="bold"
+                    android:padding="4dp" />
+
+                <TextView
+                    android:layout_width="55dp"
+                    android:layout_height="wrap_content"
+                    android:text="FG%"
+                    android:textStyle="bold"
+                    android:padding="4dp" />
+
+                <TextView
+                    android:layout_width="45dp"
+                    android:layout_height="wrap_content"
+                    android:text="3PTA"
+                    android:textStyle="bold"
+                    android:padding="4dp" />
+
+                <TextView
+                    android:layout_width="55dp"
+                    android:layout_height="wrap_content"
+                    android:text="3PT%"
+                    android:textStyle="bold"
+                    android:padding="4dp" />
+
+                <TextView
+                    android:layout_width="45dp"
+                    android:layout_height="wrap_content"
+                    android:text="FTA"
+                    android:textStyle="bold"
+                    android:padding="4dp" />
+
+                <TextView
+                    android:layout_width="55dp"
+                    android:layout_height="wrap_content"
+                    android:text="FT%"
+                    android:textStyle="bold"
+                    android:padding="4dp" />
+            </TableRow>
+        </TableLayout>
+    </HorizontalScrollView>
+
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/playersRecyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@id/controlButtonsLayout"
+        app:layout_constraintTop_toBottomOf="@id/statsHeaderScrollView" />
+
+    <LinearLayout
+        android:id="@+id/controlButtonsLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="8dp"
+        app:layout_constraintBottom_toTopOf="@id/teamSwitchLayout">
+
+        <Button
+            android:id="@+id/undoButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Undo" />
+
+        <!--        <Button-->
+        <!--            android:id="@+id/redoButton"-->
+        <!--            android:layout_width="0dp"-->
+        <!--            android:layout_height="wrap_content"-->
+        <!--            android:layout_weight="1"-->
+        <!--            android:text="Redo" />-->
+
+        <Button
+            android:id="@+id/addPlayerButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Add Player" />
+
+        <Button
+            android:id="@+id/saveGameButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Save Game" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/teamSwitchLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <Button
+            android:id="@+id/teamAButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Team A"
+            android:enabled="false" />
+
+        <Button
+            android:id="@+id/teamBButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Team B" />
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
