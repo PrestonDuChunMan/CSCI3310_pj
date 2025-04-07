@@ -13,7 +13,7 @@ import androidx.core.view.WindowInsetsCompat;
 
 public class MainActivity extends AppCompatActivity {
 
-    Button btnGameState, btnPlayerStats, btnCourtFinder;
+    Button btnGameState, btnPlayerStats, btnCourtFinder, btnGameStatsCounter, btnPlayerList, btnGameStats;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,6 +23,9 @@ public class MainActivity extends AppCompatActivity {
         btnGameState = findViewById(R.id.btnGameState);
         btnPlayerStats = findViewById(R.id.btnPlayerStats);
         btnCourtFinder = findViewById(R.id.btnCourtFinder);
+        btnGameStatsCounter = findViewById(R.id.btnGameStatsCounter);
+        btnPlayerList = findViewById(R.id.btnPlayerList);
+        btnGameStats = findViewById(R.id.btnGameStats);
 
         btnGameState.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -47,5 +50,33 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
+        btnGameStatsCounter.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, PlayerStatsCounterActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        btnGameStats.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // For direct navigation to player stats, we'll go to the player list first
+                // The user will then select a player to view their stats
+                Intent intent = new Intent(MainActivity.this, GameStatsDisplayActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        btnPlayerList.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, PlayerListActivity.class);
+                startActivity(intent);
+            }
+        });
+
+
     }
 }
