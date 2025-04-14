@@ -57,6 +57,8 @@ public class CourtEventReceiver extends BroadcastReceiver {
                 if (subscription.notifId != notifId) return;
                 mainHandler.post(() -> {
                     Intent notifIntent = new Intent(context, CourtFinderActivity.class);
+                    notifIntent.putExtra("lat", subscription.lat);
+                    notifIntent.putExtra("lon", subscription.lon);
                     TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
                     stackBuilder.addNextIntentWithParentStack(notifIntent);
                     PendingIntent pendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);

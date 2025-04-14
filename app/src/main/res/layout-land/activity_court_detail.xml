@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal"
+    android:padding="8dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <ScrollView
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        >
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            >
+            <TextView
+                android:id="@+id/title_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                android:paddingHorizontal="8dp"
+                android:paddingTop="8dp"
+                android:textSize="16dp"
+                android:text="@string/court_name"
+                />
+
+            <TextView
+                android:id="@+id/value_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingHorizontal="8dp"
+                android:paddingBottom="8dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/title_name"
+                android:textSize="24dp"
+                android:text="placeholder"
+                />
+
+            <TextView
+                android:id="@+id/title_address"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/value_name"
+                android:paddingHorizontal="8dp"
+                android:paddingTop="8dp"
+                android:textSize="16dp"
+                android:text="@string/court_address"
+                />
+
+            <TextView
+                android:id="@+id/value_address"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingHorizontal="8dp"
+                android:paddingBottom="8dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/title_address"
+                android:textSize="24dp"
+                android:text="placeholder"
+                />
+
+            <TextView
+                android:id="@+id/value_nsearch1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="8dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/value_address"
+                android:textSize="20dp"
+                android:text="placeholder"
+                />
+
+            <TextView
+                android:id="@+id/value_nsearch2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="8dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/value_nsearch1"
+                android:textSize="20dp"
+                android:text="placeholder"
+                />
+
+            <TextView
+                android:id="@+id/value_nsearch3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="8dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/value_nsearch2"
+                android:textSize="20dp"
+                android:text="placeholder"
+                />
+
+            <TextView
+                android:id="@+id/value_nsearch4"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="8dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/value_nsearch3"
+                android:textSize="20dp"
+                android:text="placeholder"
+                />
+
+            <TextView
+                android:id="@+id/value_nsearch5"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="8dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/value_nsearch4"
+                android:textSize="20dp"
+                android:text="placeholder"
+                />
+
+            <TextView
+                android:id="@+id/value_nsearch6"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="8dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/value_nsearch5"
+                android:textSize="20dp"
+                android:text="placeholder"
+                />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </ScrollView>
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        >
+
+        <Button
+            android:id="@+id/button_add_event"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="0"
+            android:text="@string/court_add_event"
+            android:layout_margin="8dp"
+            android:onClick="addEvent"
+            />
+
+        <Button
+            android:id="@+id/button_refresh"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="0"
+            android:text="@string/court_refresh"
+            android:onClick="refresh"
+            android:layout_marginBottom="8dp"
+            android:layout_marginHorizontal="8dp"
+            />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/list_event"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            app:layout_constraintTop_toBottomOf="@id/button_refresh"
+            />
+    </LinearLayout>
+
+
+</LinearLayout>

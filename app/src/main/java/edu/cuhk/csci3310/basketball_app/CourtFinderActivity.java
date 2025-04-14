@@ -59,6 +59,7 @@ public class CourtFinderActivity extends AppCompatActivity {
     private MyLocationNewOverlay locationOverlay;
     private GpsMyLocationProvider locationProvider;
     private ApiHandler apiHandler;
+    private GpsHandler gpsHandler;
     private SharedPreferences preferences;
 
     private boolean followGps = true, fetching = false;
@@ -92,6 +93,7 @@ public class CourtFinderActivity extends AppCompatActivity {
         this.mapView = findViewById(R.id.map);
         this.mapView.setTileSource(TileSourceFactory.MAPNIK);
         // setup mapview properties
+        this.gpsHandler = new GpsHandler(this);
         this.locationProvider = new GpsMyLocationProvider(ctx);
         this.locationOverlay = new MyLocationNewOverlay(this.locationProvider, this.mapView);
         this.locationOverlay.enableMyLocation();
@@ -105,7 +107,7 @@ public class CourtFinderActivity extends AppCompatActivity {
         // setup gps button and properties
         this.gpsButton = findViewById(R.id.button_gps);
         this.gpsButton.setOnClickListener(this::handleGpsButtonClick);
-        if (intent != null) this.stopFollowingGps();
+        if (intent != null && intent.hasExtra("lat") && intent.hasExtra("lon")) this.stopFollowingGps();
         // setup search
         this.searchView = findViewById(R.id.location_search);
         this.searchResultView = findViewById(R.id.list_search);

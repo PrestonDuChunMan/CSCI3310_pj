@@ -102,7 +102,8 @@ public class CourtEventActivity extends AppCompatActivity {
                     mEvent = res.getData();
                     titleView.setText(mEvent.getTitle());
                     timeView.setText(mEvent.getFormattedTime());
-                    descriptionView.setText(mEvent.getDescription());
+                    if (mEvent.getDescription().isBlank()) descriptionView.setText(R.string.court_event_no_desc);
+                    else descriptionView.setText(mEvent.getDescription());
 
                     if (mEvent.getTime().isBefore(ZonedDateTime.now()))
                         subButton.setEnabled(false);
