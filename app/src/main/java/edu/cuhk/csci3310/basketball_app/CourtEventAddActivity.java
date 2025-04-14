@@ -64,7 +64,7 @@ public class CourtEventAddActivity extends AppCompatActivity implements DatePick
 
     @Override
     public void onDateSet(DatePicker datePicker, int year, int month, int day) {
-        this.mDateTime = this.mDateTime.withYear(year).withMonth(month).withDayOfMonth(day);
+        this.mDateTime = this.mDateTime.withYear(year).withMonth(month + 1).withDayOfMonth(day);
         this.setTimeViewText();
 
         TimePickerFragment fragment = new TimePickerFragment(this.mDateTime, this);
