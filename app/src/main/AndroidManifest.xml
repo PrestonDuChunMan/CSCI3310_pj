@@ -40,7 +40,8 @@
             android:exported="false" />
         <activity
             android:name=".CourtFinderActivity"
-            android:exported="true" />
+            android:exported="true"
+            android:parentActivityName=".MainActivity" />
         <activity
             android:name=".CourtDetailActivity"
             android:exported="false" />

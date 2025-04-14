@@ -1,11 +1,13 @@
 package edu.cuhk.csci3310.basketball_app;
 
+import android.Manifest;
 import android.app.AlarmManager;
 import android.app.AlertDialog;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.app.TaskStackBuilder;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -54,13 +56,19 @@ public class CourtEventReceiver extends BroadcastReceiver {
             dao.get(id).doOnSuccess(subscription -> {
                 if (subscription.notifId != notifId) return;
                 mainHandler.post(() -> {
+                    Intent notifIntent = new Intent(context, CourtFinderActivity.class);
+                    TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
+                    stackBuilder.addNextIntentWithParentStack(notifIntent);
+                    PendingIntent pendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+
                     Notification notification = new NotificationCompat.Builder(context, CHANNEL_ID)
                             .setSmallIcon(R.drawable.basketball_outline)
                             .setContentTitle("Event Reminder")
                             .setContentText(String.format("%s is happening on %s", name, time))
+                            .setContentIntent(pendingIntent)
                             .build();
 
-                    if (ActivityCompat.checkSelfPermission(context, android.Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED)
+                    if (ActivityCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED)
                         return;
                     compat.notify(NOTIFICATION_ID, notification);
                 });

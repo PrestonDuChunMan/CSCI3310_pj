@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
@@ -58,6 +59,7 @@ public class CourtFinderActivity extends AppCompatActivity {
     private MyLocationNewOverlay locationOverlay;
     private GpsMyLocationProvider locationProvider;
     private ApiHandler apiHandler;
+    private SharedPreferences preferences;
 
     private boolean followGps = true, fetching = false;
     private MapViewConfig mapViewConfig = null;
@@ -73,6 +75,17 @@ public class CourtFinderActivity extends AppCompatActivity {
         Configuration.getInstance().load(ctx, PreferenceManager.getDefaultSharedPreferences(ctx));
         askForPermissions(List.of(android.Manifest.permission.ACCESS_COARSE_LOCATION, android.Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.WRITE_EXTERNAL_STORAGE));
 
+        GeoPoint center = null;
+        Intent intent = getIntent();
+        if (intent != null) {
+            if (intent.hasExtra("lat") && intent.hasExtra("lon"))
+                center = new GeoPoint(intent.getDoubleExtra("lat", 0), intent.getDoubleExtra("lon", 0));
+        }
+        if (center == null) {
+            preferences = getSharedPreferences("court-finder", Context.MODE_PRIVATE);
+            center = new GeoPoint(preferences.getFloat("lat", 0), preferences.getFloat("lon", 0));
+        }
+
         setContentView(R.layout.activity_court_finder);
 
         // setup mapview
@@ -84,6 +97,7 @@ public class CourtFinderActivity extends AppCompatActivity {
         this.locationOverlay.enableMyLocation();
         this.mapView.getOverlays().add(this.locationOverlay);
         this.mapView.setZoomLevel(18);
+        this.mapView.setExpectedCenter(center);
         this.mapView.setOnTouchListener((view, motionEvent) -> {
             this.stopFollowingGps();
             return false;
@@ -91,6 +105,7 @@ public class CourtFinderActivity extends AppCompatActivity {
         // setup gps button and properties
         this.gpsButton = findViewById(R.id.button_gps);
         this.gpsButton.setOnClickListener(this::handleGpsButtonClick);
+        if (intent != null) this.stopFollowingGps();
         // setup search
         this.searchView = findViewById(R.id.location_search);
         this.searchResultView = findViewById(R.id.list_search);
@@ -168,15 +183,20 @@ public class CourtFinderActivity extends AppCompatActivity {
     }
 
     private void refreshNearbyCourts() {
-        if (this.fetching) return;
         IGeoPoint point = this.mapView.getMapCenter();
         double lat = point.getLatitude();
         double lon = point.getLongitude();
+        // store last location
+        if (this.preferences != null)
+            this.preferences.edit().putFloat("lat", (float) lat).putFloat("lon", (float) lon).apply();
+        // handle refresh courts
+        if (this.fetching) return;
         if (this.mapViewConfig != null) {
             if (this.mapViewConfig.compare(this.mapView)) return;
             this.mapViewConfig.update(this.mapView);
         } else this.mapViewConfig = new MapViewConfig(this.mapView);
         this.fetching = true;
+        Log.d(TAG, String.format("Trying to get nearby courts at (%f, %f)", lat, lon));
         ApiHandler.BoundingBox box = new ApiHandler.BoundingBox(lat - 0.01, lat + 0.01, lon - 0.01, lon + 0.01);
         Call<BasketballCourtData> call = this.apiHandler.getBasketballCourts(box, 100, 0);
         call.enqueue(new Callback<>() {
