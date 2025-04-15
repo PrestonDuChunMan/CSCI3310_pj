@@ -22,13 +22,13 @@
             android:textSize="16sp"
             android:textStyle="bold" />
 
-<!--        <TextView-->
-<!--            android:id="@+id/playerPreviewStatsTextView"-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:layout_marginTop="4dp"-->
-<!--            android:text="0.0 PPG | 0.0 RPG | 0.0 APG"-->
-<!--            android:textSize="14sp" />-->
+        <TextView
+            android:id="@+id/playerPreviewStatsTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="0.0 PPG | 0.0 RPG | 0.0 APG | 0.0 FG% | 0.0 3PT%"
+            android:textSize="14sp" />
 
 <!--        <TextView-->
 <!--            android:id="@+id/tapForDetailsTextView"-->

@@ -229,6 +229,12 @@
                     android:text="FT%"
                     android:textStyle="bold"
                     android:padding="4dp" />
+                <TextView
+                    android:layout_width="50dp"
+                    android:layout_height="wrap_content"
+                    android:text="Delete"
+                    android:textStyle="bold"
+                    android:padding="4dp" />
             </TableRow>
         </TableLayout>
     </HorizontalScrollView>

@@ -11,10 +11,11 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Locale;
-
+import java.util.ArrayList;
 public class GameListAdapter extends RecyclerView.Adapter<GameListAdapter.GameViewHolder> {
 
     private List<Game> games;
+    private List<Game> allGames;
     private OnGameClickListener listener;
 
     public interface OnGameClickListener {
@@ -23,6 +24,7 @@ public class GameListAdapter extends RecyclerView.Adapter<GameListAdapter.GameVi
 
     public GameListAdapter(List<Game> games, OnGameClickListener listener) {
         this.games = games;
+        this.allGames = new ArrayList<>(games); // Make a copy for filtering
         this.listener = listener;
     }
 
@@ -44,6 +46,12 @@ public class GameListAdapter extends RecyclerView.Adapter<GameListAdapter.GameVi
     public int getItemCount() {
         return games.size();
     }
+
+    public void updateGames(List<Game> newGames) {
+        this.games = newGames;
+        notifyDataSetChanged();
+    }
+
 
     class GameViewHolder extends RecyclerView.ViewHolder {
         TextView gameNameTextView;

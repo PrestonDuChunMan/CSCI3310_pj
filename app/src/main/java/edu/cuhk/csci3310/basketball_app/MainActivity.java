@@ -13,7 +13,7 @@ import androidx.core.view.WindowInsetsCompat;
 
 public class MainActivity extends AppCompatActivity {
 
-    Button btnGameState, btnPlayerStats, btnCourtFinder, btnGameStatsCounter, btnPlayerList, btnGameStats;
+    Button btnGameState, btnCourtFinder, btnGameStatsCounter, btnPlayerList, btnGameStats;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -21,7 +21,6 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         btnGameState = findViewById(R.id.btnGameState);
-        btnPlayerStats = findViewById(R.id.btnPlayerStats);
         btnCourtFinder = findViewById(R.id.btnCourtFinder);
         btnGameStatsCounter = findViewById(R.id.btnGameStatsCounter);
         btnPlayerList = findViewById(R.id.btnPlayerList);
@@ -31,14 +30,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this, GameStateTrackerActivity.class);
-                startActivity(intent);
-            }
-        });
-
-        btnPlayerStats.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, PlayerStatisticsActivity.class);
                 startActivity(intent);
             }
         });

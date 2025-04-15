@@ -177,12 +177,99 @@
                 app:cardCornerRadius="8dp"
                 app:cardElevation="4dp">
 
-                <TextView
-                    android:id="@+id/comparisonTextView"
+                <LinearLayout
+                    android:id="@+id/comparisonLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:padding="16dp"
-                    android:text="Team Comparison" />
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <!-- Field Goals Row -->
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Field Goals"
+                        android:textStyle="bold" />
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+                        <ProgressBar
+                            android:id="@+id/fgProgressA"
+                            style="?android:attr/progressBarStyleHorizontal"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:max="100" />
+                        <ProgressBar
+                            android:id="@+id/fgProgressB"
+                            style="?android:attr/progressBarStyleHorizontal"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:max="100"
+                            android:layout_marginStart="8dp" />
+                    </LinearLayout>
+
+                    <!-- 3-Pointers Row -->
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        android:text="3-Pointers"
+                        android:textStyle="bold" />
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+                        <ProgressBar
+                            android:id="@+id/pt3ProgressA"
+                            style="?android:attr/progressBarStyleHorizontal"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:max="100" />
+                        <ProgressBar
+                            android:id="@+id/pt3ProgressB"
+                            style="?android:attr/progressBarStyleHorizontal"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:max="100"
+                            android:layout_marginStart="8dp" />
+                    </LinearLayout>
+
+                    <!-- Free Throws Row -->
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        android:text="Free Throws"
+                        android:textStyle="bold" />
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+                        <ProgressBar
+                            android:id="@+id/ftProgressA"
+                            style="?android:attr/progressBarStyleHorizontal"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:max="100" />
+                        <ProgressBar
+                            android:id="@+id/ftProgressB"
+                            style="?android:attr/progressBarStyleHorizontal"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:max="100"
+                            android:layout_marginStart="8dp" />
+                    </LinearLayout>
+
+
+
+                </LinearLayout>
             </androidx.cardview.widget.CardView>
 
         </LinearLayout>
