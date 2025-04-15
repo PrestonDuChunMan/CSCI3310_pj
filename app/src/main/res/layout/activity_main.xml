@@ -19,7 +19,6 @@
         app:layout_constraintBottom_toTopOf="@+id/btnCourtFinder"
         android:layout_marginTop="40dp"/>
 
-    <!-- Button to navigate to CourtFinderActivity -->
     <Button
         android:id="@+id/btnCourtFinder"
         android:layout_width="wrap_content"
@@ -31,7 +30,6 @@
         app:layout_constraintBottom_toTopOf="@+id/btnGameStatsCounter"
         android:layout_marginTop="20dp"/>
 
-    <!-- Button to navigate to Game Stats Counter -->
     <Button
         android:id="@+id/btnGameStatsCounter"
         android:layout_width="wrap_content"
@@ -43,7 +41,6 @@
         app:layout_constraintBottom_toTopOf="@+id/btnGameStats"
         android:layout_marginTop="20dp"/>
 
-    <!-- Button to navigate to Game Stats -->
     <Button
         android:id="@+id/btnGameStats"
         android:layout_width="wrap_content"
@@ -55,7 +52,6 @@
         android:layout_marginTop="20dp"
         android:layout_marginBottom="40dp"/>
 
-    <!-- Button to navigate to PlayerListActivity -->
     <Button
         android:id="@+id/btnPlayerList"
         android:layout_width="wrap_content"

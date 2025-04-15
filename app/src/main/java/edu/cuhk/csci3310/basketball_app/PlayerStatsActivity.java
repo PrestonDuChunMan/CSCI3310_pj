@@ -47,10 +47,7 @@ public class PlayerStatsActivity extends AppCompatActivity {
     private void displayPlayerStats() {
         playerNameTextView.setText(playerName);
 
-        // Get player's average stats
         GameDataManager.PlayerStats averages = dataManager.getPlayerAverageStats(playerName);
-
-        // Format the averages string
         String averagesText = String.format(Locale.getDefault(),
                 "Averages: %.1f PPG (FG: %.1f%%, 3PT: %.1f%%, FT: %.1f%%), %.1f RPG, %.1f APG, %.1f SPG, %.1f BPG, %.1f TOPG",
                 averages.points,
@@ -65,7 +62,7 @@ public class PlayerStatsActivity extends AppCompatActivity {
 
         averageStatsTextView.setText(averagesText);
 
-        // Get all games this player participated in
+//        show game history of player
         List<GameDataManager.PlayerGameStats> gameStats = dataManager.getPlayerStats(playerName);
 
         Collections.sort(gameStats, new Comparator<GameDataManager.PlayerGameStats>() {
@@ -78,7 +75,6 @@ public class PlayerStatsActivity extends AppCompatActivity {
             }
         });
 
-        // Display list of games with player's stats
         PlayerGameStatsAdapter adapter = new PlayerGameStatsAdapter(gameStats, dataManager);
         gamesRecyclerView.setAdapter(adapter);
     }

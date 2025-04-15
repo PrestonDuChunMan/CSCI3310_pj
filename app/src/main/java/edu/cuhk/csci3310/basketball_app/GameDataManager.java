@@ -42,7 +42,6 @@ public class GameDataManager {
             game.setId(maxId + 1);
         }
 
-        // Update or add game
         boolean found = false;
         for (int i = 0; i < games.size(); i++) {
             if (games.get(i).getId() == game.getId()) {
@@ -56,14 +55,12 @@ public class GameDataManager {
             games.add(game);
         }
 
-        // Save to SharedPreferences
         SharedPreferences prefs = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = prefs.edit();
         String gamesJson = gson.toJson(games);
         editor.putString(GAMES_KEY, gamesJson);
         editor.apply();
 
-        // Also update player stats
         updatePlayerStats(game);
     }
 
@@ -78,9 +75,8 @@ public class GameDataManager {
         Type type = new TypeToken<List<Game>>() {}.getType();
         List<Game> games = gson.fromJson(gamesJson, type);
 
-        // Sort by date (newest first)
+//        change the display style to show to latest game first in player averages game history
         Collections.sort(games, (g1, g2) -> g2.getDate().compareTo(g1.getDate()));
-
         return games;
     }
 
@@ -97,17 +93,13 @@ public class GameDataManager {
     private void updatePlayerStats(Game game) {
         Map<String, List<PlayerGameStats>> playerStatsMap = getAllPlayerStats();
 
-        // Process Team A players
         for (Player player : game.getTeamAPlayers()) {
             updatePlayerGameStats(playerStatsMap, player, game.getId(), "A");
         }
-
-        // Process Team B players
         for (Player player : game.getTeamBPlayers()) {
             updatePlayerGameStats(playerStatsMap, player, game.getId(), "B");
         }
 
-        // Save updated player stats
         SharedPreferences prefs = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = prefs.edit();
         String playerStatsJson = gson.toJson(playerStatsMap);
@@ -119,7 +111,7 @@ public class GameDataManager {
         List<Game> games = getAllGames();
         Game gameToDelete = null;
 
-        // Find the game to delete
+        // delete game records in storage with swipe to delete
         for (Game game : games) {
             if (game.getId() == gameId) {
                 gameToDelete = game;
@@ -128,17 +120,15 @@ public class GameDataManager {
         }
 
         if (gameToDelete != null) {
-            // Remove the game from the list
             games.remove(gameToDelete);
 
-            // Save updated games list
             SharedPreferences prefs = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
             SharedPreferences.Editor editor = prefs.edit();
             String gamesJson = gson.toJson(games);
             editor.putString(GAMES_KEY, gamesJson);
             editor.apply();
 
-            // Also remove this game's stats from player records
+//            player averages change
             removeGameStatsFromPlayers(gameId);
         }
     }
@@ -147,11 +137,9 @@ public class GameDataManager {
         Map<String, List<PlayerGameStats>> playerStatsMap = getAllPlayerStats();
         boolean mapUpdated = false;
 
-        // For each player, remove stats related to this game
         for (String playerName : playerStatsMap.keySet()) {
             List<PlayerGameStats> statsList = playerStatsMap.get(playerName);
             if (statsList != null) {
-                // Create an iterator to safely remove while iterating
                 for (int i = statsList.size() - 1; i >= 0; i--) {
                     if (statsList.get(i).getGameId() == gameId) {
                         statsList.remove(i);
@@ -161,7 +149,6 @@ public class GameDataManager {
             }
         }
 
-        // Save updated player stats if needed
         if (mapUpdated) {
             SharedPreferences prefs = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
             SharedPreferences.Editor editor = prefs.edit();
@@ -170,7 +157,6 @@ public class GameDataManager {
             editor.apply();
         }
     }
-
     public void updateGameName(long gameId, String newName) {
         Game game = getGameById(gameId);
         if (game != null) {
@@ -178,7 +164,6 @@ public class GameDataManager {
             saveGame(game);
         }
     }
-
     private void updatePlayerGameStats(Map<String, List<PlayerGameStats>> playerStatsMap,
                                        Player player, long gameId, String team) {
         String playerName = player.getName();
@@ -189,12 +174,10 @@ public class GameDataManager {
 
         List<PlayerGameStats> playerGameStatsList = playerStatsMap.get(playerName);
 
-        // Check if stats for this game already exist
         boolean found = false;
         for (int i = 0; i < playerGameStatsList.size(); i++) {
             PlayerGameStats stats = playerGameStatsList.get(i);
             if (stats.getGameId() == gameId) {
-                // Update existing stats
                 stats.updateFromPlayer(player, team);
                 found = true;
                 break;
@@ -202,7 +185,6 @@ public class GameDataManager {
         }
 
         if (!found) {
-            // Add new game stats
             PlayerGameStats newStats = new PlayerGameStats(gameId, player, team);
             playerGameStatsList.add(newStats);
         }
@@ -250,7 +232,7 @@ public class GameDataManager {
             averageStats.turnovers += gameStats.turnovers;
         }
 
-        // Calculate averages
+        // cal average stats
         averageStats.points /= gamesPlayed;
         averageStats.madeFG /= gamesPlayed;
         averageStats.fga /= gamesPlayed;
@@ -295,31 +277,21 @@ public class GameDataManager {
         public void updateFromPlayer(Player player, String team) {
             this.team = team;
             this.points = player.getPoints();
-
-            // Field goals stats (includes 3PT)
             this.madeFG = player.getMadeFG();
             this.fga = player.getFGA();
-
-            // 3PT stats (subset of FG)
             this.made3PT = player.getMade3PT();
             this.tpta = player.get3PTA();
-
-            // Free throw stats
             this.madeFT = player.getMadeFT();
             this.fta = player.getFTA();
-
-            // Other stats
             this.rebounds = player.getRebounds();
             this.assists = player.getAssists();
             this.steals = player.getSteals();
             this.blocks = player.getBlocks();
             this.turnovers = player.getTurnovers();
         }
-
         public long getGameId() {
             return gameId;
         }
-
         public void setGameId(long gameId) {
             this.gameId = gameId;
         }
@@ -331,8 +303,6 @@ public class GameDataManager {
         public void setTeam(String team) {
             this.team = team;
         }
-
-        // Getters and setters for other fields
         public int getPoints() {
             return points;
         }

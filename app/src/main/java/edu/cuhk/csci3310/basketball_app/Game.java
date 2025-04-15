@@ -58,8 +58,7 @@ public class Game implements Serializable {
     public void setId(long id) {
         this.id = id;
     }
-
-    // Team stats aggregation methods
+//for team stats details display
     public int getTeamPoints(String team) {
         List<Player> players = team.equals("A") ? teamAPlayers : teamBPlayers;
         int total = 0;
@@ -73,7 +72,7 @@ public class Game implements Serializable {
         List<Player> players = team.equals("A") ? teamAPlayers : teamBPlayers;
         int total = 0;
         for (Player p : players) {
-            total += p.getMadeFG(); // This now includes 3PT makes
+            total += p.getMadeFG();
         }
         return total;
     }
@@ -82,7 +81,7 @@ public class Game implements Serializable {
         List<Player> players = team.equals("A") ? teamAPlayers : teamBPlayers;
         int total = 0;
         for (Player p : players) {
-            total += p.getFGA(); // This now includes 3PT attempts
+            total += p.getFGA();
         }
         return total;
     }
@@ -185,7 +184,7 @@ public class Game implements Serializable {
         }
         return total;
     }
-
+//compare points first, then other stats
     public Player getTopPerformer(String team) {
         List<Player> players = team.equals("A") ? teamAPlayers : teamBPlayers;
         if (players.isEmpty()) return null;
@@ -195,7 +194,7 @@ public class Game implements Serializable {
             if (p.getPoints() > top.getPoints()) {
                 top = p;
             } else if (p.getPoints() == top.getPoints()) {
-                // If points are equal, compare other stats
+
                 if (p.getRebounds() + p.getAssists() > top.getRebounds() + top.getAssists()) {
                     top = p;
                 }

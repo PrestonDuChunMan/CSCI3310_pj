@@ -78,6 +78,7 @@ public class PlayerListActivity extends AppCompatActivity implements PlayerListA
             @Override public void onNothingSelected(AdapterView<?> parent) { }
         });
     }
+//    to-do: change load player method DONE changed it so it can get all player names shown
 
     private void loadPlayers() {
         SharedPreferences prefs = getSharedPreferences("PlayerPool", MODE_PRIVATE);

@@ -62,7 +62,7 @@ public class PlayerListAdapter extends RecyclerView.Adapter<PlayerListAdapter.Pl
                 }
             });
         }
-
+//        preview stats in player averages
         void bind(String playerName) {
             playerNameTextView.setText(playerName);
             GameDataManager.PlayerStats stats = dataManager.getPlayerAverageStats(playerName);

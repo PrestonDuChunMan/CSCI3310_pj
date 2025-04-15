@@ -55,14 +55,12 @@ public class GameStatsDisplayActivity extends AppCompatActivity implements GameL
     @Override
     protected void onResume() {
         super.onResume();
-        loadGames(); // Refresh the games list when returning to this activity
+        loadGames();
     }
 
     private void initializeViews() {
         gamesRecyclerView = findViewById(R.id.gamesRecyclerView);
         emptyStateTextView = findViewById(R.id.emptyStateTextView);
-
-        // Add a null check and provide a default layout manager
         if (gamesRecyclerView != null) {
             gamesRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         }
@@ -92,14 +90,13 @@ public class GameStatsDisplayActivity extends AppCompatActivity implements GameL
     }
 
     private void setupSwipeActions() {
-        // Set up swipe to delete and edit
         ItemTouchHelper.SimpleCallback simpleCallback = new ItemTouchHelper.SimpleCallback(
                 0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
 
             @Override
             public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder,
                                   RecyclerView.ViewHolder target) {
-                return false; // We don't want drag & drop
+                return false;
             }
 
             @Override
@@ -110,10 +107,8 @@ public class GameStatsDisplayActivity extends AppCompatActivity implements GameL
                     Game swipedGame = games.get(position);
 
                     if (direction == ItemTouchHelper.LEFT) {
-                        // Swipe left to delete
                         deleteGame(swipedGame, position);
                     } else {
-                        // Swipe right to edit name
                         showEditNameDialog(swipedGame);
                     }
                 }
@@ -123,11 +118,9 @@ public class GameStatsDisplayActivity extends AppCompatActivity implements GameL
             public void onChildDraw(android.graphics.Canvas c, RecyclerView recyclerView,
                                     RecyclerView.ViewHolder viewHolder, float dX, float dY,
                                     int actionState, boolean isCurrentlyActive) {
-                // Add visual cues for the swipe actions
                 View itemView = viewHolder.itemView;
-
+//set swipe color
                 if (actionState == ItemTouchHelper.ACTION_STATE_SWIPE) {
-                    // Draw red background for delete (left swipe)
                     if (dX < 0) {
                         android.graphics.drawable.ColorDrawable background =
                                 new android.graphics.drawable.ColorDrawable(android.graphics.Color.parseColor("#FF5252"));
@@ -135,7 +128,6 @@ public class GameStatsDisplayActivity extends AppCompatActivity implements GameL
                                 itemView.getRight(), itemView.getBottom());
                         background.draw(c);
                     }
-                    // Draw blue background for edit (right swipe)
                     else if (dX > 0) {
                         android.graphics.drawable.ColorDrawable background =
                                 new android.graphics.drawable.ColorDrawable(android.graphics.Color.parseColor("#2196F3"));
@@ -154,41 +146,29 @@ public class GameStatsDisplayActivity extends AppCompatActivity implements GameL
     }
 
     private void deleteGame(final Game game, final int position) {
-        // Create a confirmation dialog
         new AlertDialog.Builder(this)
                 .setTitle("Delete Game")
                 .setMessage("Delete game record, update players stats")
                 .setPositiveButton("Delete", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        // Backup the game before deletion for potential undo
                         final Game deletedGame = game;
-
-                        // Delete from storage
                         dataManager.deleteGame(game.getId());
-
-                        // Update local list and adapter
                         games.remove(position);
                         adapter.notifyItemRemoved(position);
-
-                        // Show empty state if needed
                         if (games.isEmpty()) {
                             emptyStateTextView.setVisibility(View.VISIBLE);
                             gamesRecyclerView.setVisibility(View.GONE);
                         }
 
-                        // Show snackbar with undo option
                         Snackbar snackbar = Snackbar.make(gamesRecyclerView,
                                 "Game deleted", Snackbar.LENGTH_LONG);
 
                         snackbar.setAction("UNDO", new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
-                                // Re-add the game
                                 dataManager.saveGame(deletedGame);
-                                loadGames(); // Reload all games to ensure proper order
-
-                                // Hide empty state if needed
+                                loadGames();
                                 emptyStateTextView.setVisibility(View.GONE);
                                 gamesRecyclerView.setVisibility(View.VISIBLE);
                             }
@@ -200,7 +180,6 @@ public class GameStatsDisplayActivity extends AppCompatActivity implements GameL
                 .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        // User cancelled, reset the adapter to show the item again
                         adapter.notifyItemChanged(position);
                     }
                 })
@@ -209,7 +188,6 @@ public class GameStatsDisplayActivity extends AppCompatActivity implements GameL
     }
 
     private void showEditNameDialog(final Game game) {
-        // Create an edit text for the dialog
         final EditText input = new EditText(this);
         input.setText(game.getName());
         input.setSelection(input.getText().length());
@@ -222,10 +200,7 @@ public class GameStatsDisplayActivity extends AppCompatActivity implements GameL
                     public void onClick(DialogInterface dialog, int which) {
                         String newName = input.getText().toString().trim();
                         if (!newName.isEmpty()) {
-                            // Update the game name
                             dataManager.updateGameName(game.getId(), newName);
-
-                            // Refresh the list to show updated name
                             loadGames();
 
                             Toast.makeText(GameStatsDisplayActivity.this,
@@ -241,7 +216,6 @@ public class GameStatsDisplayActivity extends AppCompatActivity implements GameL
                 .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        // Reset the adapter to remove the swipe effect
                         loadGames();
                     }
                 })
@@ -250,7 +224,7 @@ public class GameStatsDisplayActivity extends AppCompatActivity implements GameL
     }
 
     @Override
-    public void onGameClick(Game game) {
+    public void onGameClick(Game game) {//directs to game details
         Intent intent = new Intent(this, GameDetailsActivity.class);
         intent.putExtra("GAME_ID", game.getId());
         startActivity(intent);
