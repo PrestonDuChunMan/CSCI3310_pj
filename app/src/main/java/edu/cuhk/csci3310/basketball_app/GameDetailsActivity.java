@@ -52,9 +52,9 @@ public class GameDetailsActivity extends AppCompatActivity implements GameStatsA
         }
 
         displayGameDetails();
-        switchTeam("A"); // Start with Team A
+        switchTeam("A");
 
-        // Set up scroll synchronization
+//        to handle scrolling thru player stats in the same time
         setupSynchronizedScrolling();
     }
 
@@ -75,11 +75,8 @@ public class GameDetailsActivity extends AppCompatActivity implements GameStatsA
     private void setupSynchronizedScrolling() {
         HorizontalScrollView headerScrollView = findViewById(R.id.statsHeaderScrollView);
 
-        // Make header scroll sync with player rows
         if (adapter != null && headerScrollView != null) {
-            // Make individual items scroll when header scrolls
             headerScrollView.setOnScrollChangeListener((v, scrollX, scrollY, oldScrollX, oldScrollY) -> {
-                // Find all visible view holders and sync their scroll position
                 for (int i = 0; i < adapter.getItemCount(); i++) {
                     RecyclerView.ViewHolder holder = playersRecyclerView.findViewHolderForAdapterPosition(i);
                     if (holder != null && holder.itemView instanceof ViewGroup) {
@@ -95,8 +92,6 @@ public class GameDetailsActivity extends AppCompatActivity implements GameStatsA
 
     private void displayGameDetails() {
         gameNameTextView.setText(currentGame.getName());
-
-        // Get team percentages
         int fgA = Math.round(currentGame.getTeamFGPercentage("A"));
         int fgB = Math.round(currentGame.getTeamFGPercentage("B"));
         int pt3A = Math.round(currentGame.getTeam3PTPercentage("A"));
@@ -104,7 +99,6 @@ public class GameDetailsActivity extends AppCompatActivity implements GameStatsA
         int ftA = Math.round(currentGame.getTeamFTPercentage("A"));
         int ftB = Math.round(currentGame.getTeamFTPercentage("B"));
 
-        // Update progress bars
         ProgressBar fgProgressA = findViewById(R.id.fgProgressA);
         ProgressBar fgProgressB = findViewById(R.id.fgProgressB);
         ProgressBar pt3ProgressA = findViewById(R.id.pt3ProgressA);
@@ -119,13 +113,11 @@ public class GameDetailsActivity extends AppCompatActivity implements GameStatsA
         ftProgressA.setProgress(ftA);
         ftProgressB.setProgress(ftB);
 
-        // (Optional) Hide the old text comparison if present
 //        TextView comparisonTextView = findViewById(R.id.comparisonTextView);
-        if (comparisonTextView != null) {
-            comparisonTextView.setVisibility(View.GONE);
-        }
+//        if (comparisonTextView != null) {
+//            comparisonTextView.setVisibility(View.GONE);
+//        }
 
-        // Existing display logic for top performers remains unchanged
         StringBuilder topPerformers = new StringBuilder("Top Performers\n\n");
         Player teamATop = currentGame.getTopPerformer("A");
         Player teamBTop = currentGame.getTopPerformer("B");
@@ -153,29 +145,21 @@ public class GameDetailsActivity extends AppCompatActivity implements GameStatsA
     private void switchTeam(String team) {
         currentTeam = team;
         if (team.equals("A")) {
-            // Update button appearances for Team A selection
             teamAButton.setEnabled(false);
             teamBButton.setEnabled(true);
-
-            // Team A active appearance (black background, white text)
+//            onclick change color
             teamAButton.setBackgroundColor(ContextCompat.getColor(this, android.R.color.black));
             teamAButton.setTextColor(ContextCompat.getColor(this, android.R.color.white));
-
-            // Team B inactive appearance (light grey background, black text)
             teamBButton.setBackgroundColor(Color.parseColor("#F0F0F0"));
             teamBButton.setTextColor(ContextCompat.getColor(this, android.R.color.black));
 
             adapter = new GameStatsAdapter(currentGame.getTeamAPlayers(), this);
         } else {
-            // Update button appearances for Team B selection
+//            same
             teamAButton.setEnabled(true);
             teamBButton.setEnabled(false);
-
-            // Team A inactive appearance (light grey background, black text)
             teamAButton.setBackgroundColor(Color.parseColor("#F0F0F0"));
             teamAButton.setTextColor(ContextCompat.getColor(this, android.R.color.black));
-
-            // Team B active appearance (black background, white text)
             teamBButton.setBackgroundColor(ContextCompat.getColor(this, android.R.color.black));
             teamBButton.setTextColor(ContextCompat.getColor(this, android.R.color.white));
 
@@ -183,7 +167,7 @@ public class GameDetailsActivity extends AppCompatActivity implements GameStatsA
         }
 
         playersRecyclerView.setAdapter(adapter);
-        setupSynchronizedScrolling(); // Re-setup scroll synchronization when team changes
+        setupSynchronizedScrolling();
     }
 
     @Override

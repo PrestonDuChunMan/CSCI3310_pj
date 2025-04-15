@@ -51,12 +51,10 @@ public class PlayerGameStatsAdapter extends RecyclerView.Adapter<PlayerGameStats
         }
 
         void bind(GameDataManager.PlayerGameStats stats) {
-            // Get game name
             Game game = dataManager.getGameById(stats.getGameId());
             String gameName = game != null ? game.getName() : "Game " + stats.getGameId();
             gameNameTextView.setText(gameName + " (Team " + stats.getTeam() + ")");
-
-            // Format stats string
+//game history
             String statsText = String.format(Locale.getDefault(),
                     "%d PTS (%d/%d FG, %d/%d 3PT, %d/%d FT), %d REB, %d AST, %d STL, %d BLK, %d TO",
                     stats.getPoints(),

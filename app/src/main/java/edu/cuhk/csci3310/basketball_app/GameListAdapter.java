@@ -24,7 +24,8 @@ public class GameListAdapter extends RecyclerView.Adapter<GameListAdapter.GameVi
 
     public GameListAdapter(List<Game> games, OnGameClickListener listener) {
         this.games = games;
-        this.allGames = new ArrayList<>(games); // Make a copy for filtering
+        this.allGames = new ArrayList<>(games); // for filter feature
+
         this.listener = listener;
     }
 

@@ -23,13 +23,9 @@ public class PlayerStatsAdapter extends RecyclerView.Adapter<PlayerStatsAdapter.
     private final DecimalFormat percentFormat = new DecimalFormat("0.0%");
     private HorizontalScrollView headerScrollView;
     private boolean isUserScrolling = false;
-
-    // Interface for handling stat increments
     public interface StatIncrementListener {
         void onClick(Player player, String statType, int value);
     }
-
-    // Interface for handling button animation
     public interface ButtonAnimationListener {
         void onButtonPressed(Button button);
     }
@@ -40,15 +36,11 @@ public class PlayerStatsAdapter extends RecyclerView.Adapter<PlayerStatsAdapter.
         this.statIncrementListener = listener;
         this.buttonAnimationListener = animationListener;
     }
-
     public void updatePlayers(List<Player> newPlayers) {
         this.players = newPlayers;
         notifyDataSetChanged();
     }
-
-    /**
-     * Set the header scroll view for synchronized scrolling
-     */
+//    to sync scroll
     public void setHeaderScrollView(HorizontalScrollView headerScrollView) {
         this.headerScrollView = headerScrollView;
     }
@@ -66,24 +58,18 @@ public class PlayerStatsAdapter extends RecyclerView.Adapter<PlayerStatsAdapter.
         Player player = players.get(position);
         holder.bind(player);
 
-        // Synchronize scroll state with header initially
         if (headerScrollView != null) {
             holder.playerStatsScrollView.post(() -> {
                 holder.playerStatsScrollView.scrollTo(headerScrollView.getScrollX(), 0);
             });
         }
 
-        // Set scroll listener for this row
         holder.playerStatsScrollView.setOnScrollChangeListener((v, scrollX, scrollY, oldScrollX, oldScrollY) -> {
             if (!isUserScrolling) {
                 isUserScrolling = true;
-
-                // Synchronize header
                 if (headerScrollView != null) {
                     headerScrollView.scrollTo(scrollX, 0);
                 }
-
-                // Synchronize all other visible rows
                 for (int i = 0; i < getItemCount(); i++) {
                     if (i != position) {
                         PlayerViewHolder otherHolder = (PlayerViewHolder)
@@ -146,8 +132,6 @@ public class PlayerStatsAdapter extends RecyclerView.Adapter<PlayerStatsAdapter.
             super(itemView);
             playerNameTextView = itemView.findViewById(R.id.playerNameTextView);
             playerStatsScrollView = itemView.findViewById(R.id.playerStatsScrollView);
-
-            // Stat values
             pointsTextView = itemView.findViewById(R.id.pointsTextView);
             madeFGTextView = itemView.findViewById(R.id.madeFGTextView);
             missedFGTextView = itemView.findViewById(R.id.missedFGTextView);
@@ -166,8 +150,7 @@ public class PlayerStatsAdapter extends RecyclerView.Adapter<PlayerStatsAdapter.
             stealsTextView = itemView.findViewById(R.id.stealsTextView);
             blocksTextView = itemView.findViewById(R.id.blocksTextView);
             turnoversTextView = itemView.findViewById(R.id.turnoversTextView);
-
-            // Increment buttons
+//increment button
             madeFGButton = itemView.findViewById(R.id.madeFGButton);
             missedFGButton = itemView.findViewById(R.id.missedFGButton);
             made3PTButton = itemView.findViewById(R.id.made3PTButton);
@@ -184,15 +167,11 @@ public class PlayerStatsAdapter extends RecyclerView.Adapter<PlayerStatsAdapter.
 
         public void bind(final Player player) {
             playerNameTextView.setText(player.getName());
-
-            // Set stat values
             pointsTextView.setText(String.valueOf(player.getPoints()));
-
             madeFGTextView.setText(String.valueOf(player.getMadeFG()));
             missedFGTextView.setText(String.valueOf(player.getMissedFG()));
             int fga = player.getMadeFG() + player.getMissedFG();
             fgaTextView.setText(String.valueOf(fga));
-
             double fgPercentage = fga > 0 ? (double) player.getMadeFG() / fga : 0;
             fgPercentageTextView.setText(percentFormat.format(fgPercentage));
 
@@ -217,8 +196,6 @@ public class PlayerStatsAdapter extends RecyclerView.Adapter<PlayerStatsAdapter.
             stealsTextView.setText(String.valueOf(player.getSteals()));
             blocksTextView.setText(String.valueOf(player.getBlocks()));
             turnoversTextView.setText(String.valueOf(player.getTurnovers()));
-
-            // Set button click listeners
             setupButton(madeFGButton, player, "madeFG");
             setupButton(missedFGButton, player, "missedFG");
             setupButton(made3PTButton, player, "made3PT");

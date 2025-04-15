@@ -66,7 +66,6 @@ public class Player implements Serializable {
     }
 
     public int getFGA() {
-        // FGA includes both 2PT and 3PT attempts
         return (madeFG + missedFG);
     }
 
@@ -166,7 +165,7 @@ public class Player implements Serializable {
     }
 
     public void calculatePoints() {
-        // 2 points for each FG that's not a 3PT, 3 points for each 3PT, 1 point for each FT
+        // 2 pointer +2, 3 pointer +1 as FGm includes 3PTm
         this.points = ((madeFG - made3PT) * 2) + (made3PT * 3) + madeFT;
     }
 }

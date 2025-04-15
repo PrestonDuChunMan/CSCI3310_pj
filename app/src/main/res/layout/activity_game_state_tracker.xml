@@ -25,7 +25,6 @@
             app:layout_constraintTop_toTopOf="parent"
             app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
 
-        <!-- Home -->
         <TextView
             android:id="@+id/homeLabel"
             android:layout_width="wrap_content"
@@ -53,7 +52,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/homeLabel" />
 
-        <!-- Away -->
         <TextView
             android:id="@+id/awayLabel"
             android:layout_width="wrap_content"
@@ -88,7 +86,6 @@
             android:orientation="vertical"
             app:layout_constraintGuide_begin="205dp" />
 
-        <!-- Clocks  -->
         <TextView
             android:id="@+id/gameTime"
             android:layout_width="wrap_content"
@@ -123,7 +120,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/gameTime" />
 
-        <!-- buttons -->
         <LinearLayout
             android:id="@+id/controlButtons1"
             android:layout_width="match_parent"

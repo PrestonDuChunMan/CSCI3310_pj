@@ -13,10 +13,8 @@ import java.util.List;
 import java.util.Locale;
 
 public class GameStatsAdapter extends RecyclerView.Adapter<GameStatsAdapter.StatsViewHolder> {
-
     private List<Player> players;
     private OnPlayerClickListener listener;
-
     public interface OnPlayerClickListener {
         void onPlayerClick(Player player);
     }
@@ -56,8 +54,6 @@ public class GameStatsAdapter extends RecyclerView.Adapter<GameStatsAdapter.Stat
             super(itemView);
             playerNameTextView = itemView.findViewById(R.id.playerNameTextView);
             playerStatsScrollView = itemView.findViewById(R.id.playerStatsScrollView);
-
-            // Find all stats TextViews
             pointsTextView = itemView.findViewById(R.id.pointsTextView);
             fgTextView = itemView.findViewById(R.id.fgTextView);
             fgPercentageTextView = itemView.findViewById(R.id.fgPercentageTextView);
@@ -81,26 +77,16 @@ public class GameStatsAdapter extends RecyclerView.Adapter<GameStatsAdapter.Stat
 
         void bind(Player player) {
             playerNameTextView.setText(player.getName());
-
-            // Set individual stats
             pointsTextView.setText(String.valueOf(player.getPoints()));
-
-            // FG
             String fgString = player.getMadeFG() + "/" + player.getFGA();
             fgTextView.setText(fgString);
             fgPercentageTextView.setText(String.format(Locale.getDefault(), "%.1f%%", player.getFGPercentage()));
-
-            // 3PT
             String tptString = player.getMade3PT() + "/" + player.get3PTA();
             tptTextView.setText(tptString);
             tptPercentageTextView.setText(String.format(Locale.getDefault(), "%.1f%%", player.get3PTPercentage()));
-
-            // FT
             String ftString = player.getMadeFT() + "/" + player.getFTA();
             ftTextView.setText(ftString);
             ftPercentageTextView.setText(String.format(Locale.getDefault(), "%.1f%%", player.getFTPercentage()));
-
-            // Other stats
             reboundsTextView.setText(String.valueOf(player.getRebounds()));
             assistsTextView.setText(String.valueOf(player.getAssists()));
             stealsTextView.setText(String.valueOf(player.getSteals()));

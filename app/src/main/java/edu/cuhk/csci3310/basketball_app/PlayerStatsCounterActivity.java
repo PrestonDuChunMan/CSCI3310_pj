@@ -66,18 +66,12 @@ public class PlayerStatsCounterActivity extends AppCompatActivity {
         initializeGame();
         currentTeamPlayers = teamAPlayers;
         updateUI();
-
-        // Set up scroll synchronization
         setupSynchronizedScrolling();
     }
 
     private void setupSynchronizedScrolling() {
         HorizontalScrollView headerScrollView = findViewById(R.id.statsHeaderScrollView);
-
-        // Attach the header to the adapter for synchronization
         adapter.setHeaderScrollView(headerScrollView);
-
-        // Make header scroll sync with player rows
         headerScrollView.setOnScrollChangeListener((v, scrollX, scrollY, oldScrollX, oldScrollY) -> {
             // Find all visible view holders and sync their scroll position
             for (int i = 0; i < adapter.getItemCount(); i++) {
@@ -103,13 +97,11 @@ public class PlayerStatsCounterActivity extends AppCompatActivity {
         Button undoButton = findViewById(R.id.undoButton);
 //        Button redoButton = findViewById(R.id.redoButton);
 
-        // Score display views
         teamANameScoreTextView = findViewById(R.id.teamANameScoreTextView);
         teamAScoreTextView = findViewById(R.id.teamAScoreTextView);
         teamBNameScoreTextView = findViewById(R.id.teamBNameScoreTextView);
         teamBScoreTextView = findViewById(R.id.teamBScoreTextView);
 
-        // Setup RecyclerView
         playersRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         adapter = new PlayerStatsAdapter(currentTeamPlayers, this::onStatIncrement, this::animateButtonPress);
         playersRecyclerView.setAdapter(adapter);
@@ -128,13 +120,13 @@ public class PlayerStatsCounterActivity extends AppCompatActivity {
     }
 
     private void initializeGame() {
-        // Generate default game name with date and auto-increment number
+        // *********TODO not working well
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
         String currentDate = sdf.format(new Date());
 
         SharedPreferences prefs = getSharedPreferences("GameCounter", MODE_PRIVATE);
 
-        int gameCount = prefs.getInt(currentDate, 0) + 1; // Use currentDate as the key
+        int gameCount = prefs.getInt(currentDate, 0) + 1;
 
 //        SharedPreferences.Editor editor = prefs.edit();
 //        editor.clear();
@@ -148,14 +140,11 @@ public class PlayerStatsCounterActivity extends AppCompatActivity {
         editor.putInt(currentDate, gameCount);
         editor.apply();
 
-        // Create new game object
         currentGame = new Game(defaultName, new ArrayList<>(teamAPlayers), new ArrayList<>(teamBPlayers));
 
-        // Initialize team names in score display
         teamANameScoreTextView.setText("Team A");
         teamBNameScoreTextView.setText("Team B");
 
-        // Set initial team button appearance (Team A selected by default)
         teamAButton.setBackgroundColor(ContextCompat.getColor(this, android.R.color.black));
         teamAButton.setTextColor(ContextCompat.getColor(this, android.R.color.white));
         teamBButton.setBackgroundColor(Color.parseColor("#F0F0F0"));
@@ -181,29 +170,24 @@ public class PlayerStatsCounterActivity extends AppCompatActivity {
         if (team.equals("A")) {
             currentTeamPlayers = teamAPlayers;
 
-            // Update button appearances for Team A selection
             teamAButton.setEnabled(false);
             teamBButton.setEnabled(true);
+//            change color onclick
 
-            // Team A active appearance (black background, white text)
             teamAButton.setBackgroundColor(ContextCompat.getColor(this, android.R.color.black));
             teamAButton.setTextColor(ContextCompat.getColor(this, android.R.color.white));
 
-            // Team B inactive appearance (light grey background, black text)
             teamBButton.setBackgroundColor(Color.parseColor("#F0F0F0"));
             teamBButton.setTextColor(ContextCompat.getColor(this, android.R.color.black));
         } else {
             currentTeamPlayers = teamBPlayers;
 
-            // Update button appearances for Team B selection
             teamAButton.setEnabled(true);
             teamBButton.setEnabled(false);
 
-            // Team A inactive appearance (light grey background, black text)
             teamAButton.setBackgroundColor(Color.parseColor("#F0F0F0"));
             teamAButton.setTextColor(ContextCompat.getColor(this, android.R.color.black));
 
-            // Team B active appearance (black background, white text)
             teamBButton.setBackgroundColor(ContextCompat.getColor(this, android.R.color.black));
             teamBButton.setTextColor(ContextCompat.getColor(this, android.R.color.white));
         }
@@ -213,12 +197,10 @@ public class PlayerStatsCounterActivity extends AppCompatActivity {
 
     private void showAddPlayerDialog() {
         GameDataManager dataManager = new GameDataManager(this);
-        // Union of playerPool and players from averages.
         Set<String> averagePlayers = new HashSet<>(playerPool);
         Map<String, List<GameDataManager.PlayerGameStats>> stats = dataManager.getAllPlayerStats();
         averagePlayers.addAll(stats.keySet());
-
-        // Create a display list with an "Add New" option at the top.
+//add new on top, player names at bottom
         List<String> displayList = new ArrayList<>();
         displayList.add("Add New");
         displayList.addAll(averagePlayers);
@@ -261,8 +243,6 @@ public class PlayerStatsCounterActivity extends AppCompatActivity {
         } else {
             teamBPlayers.add(newPlayer);
         }
-
-        // Make sure the player name is added to the pool and saved
         playerPool.add(name);
         savePlayerPool();
 
@@ -271,15 +251,12 @@ public class PlayerStatsCounterActivity extends AppCompatActivity {
     }
 
     private void onStatIncrement(Player player, String statType, int value) {
-        // Save for undo
         StatsAction action = new StatsAction(player, statType, value);
         undoStack.push(action);
         redoStack.clear();
 
-        // Update stats based on type
         switch (statType) {
             case "delete":
-                // Handle player deletion
                 if (currentTeam.equals("A")) {
                     teamAPlayers.remove(player);
                 } else {
@@ -288,29 +265,27 @@ public class PlayerStatsCounterActivity extends AppCompatActivity {
                 adapter.updatePlayers(currentTeamPlayers);
                 updateTeamTotals();
                 updateTeamScores();
-                return; // Return early as we don't need to notifyDataSetChanged again
+                return;
 
             case "madeFG":
                 player.setMadeFG(player.getMadeFG() + value);
-                player.setPoints(player.getPoints() + (2 * value)); // 2 points per FG
+                player.setPoints(player.getPoints() + (2 * value));
                 break;
             case "missedFG":
                 player.setMissedFG(player.getMissedFG() + value);
                 break;
             case "made3PT":
                 player.setMade3PT(player.getMade3PT() + value);
-                // Also count as field goals made
                 player.setMadeFG(player.getMadeFG() + value);
-                player.setPoints(player.getPoints() + (3 * value)); // 3 points per 3PT
+                player.setPoints(player.getPoints() + (3 * value));
                 break;
             case "missed3PT":
                 player.setMissed3PT(player.getMissed3PT() + value);
-                // Also count as field goals missed
                 player.setMissedFG(player.getMissedFG() + value);
                 break;
             case "madeFT":
                 player.setMadeFT(player.getMadeFT() + value);
-                player.setPoints(player.getPoints() + value); // 1 point per FT
+                player.setPoints(player.getPoints() + value);
                 break;
             case "missedFT":
                 player.setMissedFT(player.getMissedFT() + value);
@@ -332,13 +307,13 @@ public class PlayerStatsCounterActivity extends AppCompatActivity {
                 break;
         }
 
-        // Update UI
         adapter.notifyDataSetChanged();
         updateTeamTotals();
         updateTeamScores();
     }
 
     private void animateButtonPress(Button button) {
+//        not working well so aborted
         // Store the original background tint
 //        final ColorStateList originalTint = button.getBackgroundTintList();
 //
@@ -360,10 +335,7 @@ public class PlayerStatsCounterActivity extends AppCompatActivity {
         StatsAction action = undoStack.pop();
         redoStack.push(action);
 
-        // Reverse the action by passing negative value
         onStatIncrement(action.getPlayer(), action.getStatType(), -action.getValue());
-
-        // Remove the undo entry created by the reverse action
         if (!undoStack.isEmpty()) {
             undoStack.pop();
         }
@@ -374,7 +346,6 @@ public class PlayerStatsCounterActivity extends AppCompatActivity {
 //
 //        StatsAction action = redoStack.pop();
 //
-//        // Apply the action again
 //        onStatIncrement(action.getPlayer(), action.getStatType(), action.getValue());
 //    }
 
@@ -399,13 +370,13 @@ public class PlayerStatsCounterActivity extends AppCompatActivity {
             totalPoints += player.getPoints();
             totalMadeFG += player.getMadeFG();
             totalMissedFG += player.getMissedFG();
-            totalFGA = totalMadeFG + totalMissedFG; // FGA is sum of makes and misses
+            totalFGA = totalMadeFG + totalMissedFG;
             totalMade3PT += player.getMade3PT();
             totalMissed3PT += player.getMissed3PT();
-            total3PTA = totalMade3PT + totalMissed3PT; // 3PTA is sum of 3PT makes and misses
+            total3PTA = totalMade3PT + totalMissed3PT;
             totalMadeFT += player.getMadeFT();
             totalMissedFT += player.getMissedFT();
-            totalFTA = totalMadeFT + totalMissedFT; // FTA is sum of FT makes and misses
+            totalFTA = totalMadeFT + totalMissedFT;
             totalRebounds += player.getRebounds();
             totalAssists += player.getAssists();
             totalSteals += player.getSteals();
@@ -454,20 +425,16 @@ public class PlayerStatsCounterActivity extends AppCompatActivity {
             return;
         }
 
-        // Update game object
         currentGame.setName(gameName);
         currentGame.setTeamAPlayers(new ArrayList<>(teamAPlayers));
         currentGame.setTeamBPlayers(new ArrayList<>(teamBPlayers));
 
-        // Save game to database or shared preferences
         GameDataManager dataManager = new GameDataManager(this);
         dataManager.saveGame(currentGame);
 
-        // Get current date
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
         String currentDate = sdf.format(new Date());
 
-        // Update game counter and last date
         SharedPreferences prefs = getSharedPreferences("GameCounter", MODE_PRIVATE);
         int gameCount = prefs.getInt("gameCount", 0) + 1;
         SharedPreferences.Editor editor = prefs.edit();
@@ -477,7 +444,6 @@ public class PlayerStatsCounterActivity extends AppCompatActivity {
 
         Toast.makeText(this, "Game stats saved!", Toast.LENGTH_SHORT).show();
 
-        // Navigate to game stats display
         Intent intent = new Intent(this, GameStatsDisplayActivity.class);
         startActivity(intent);
         finish();

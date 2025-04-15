@@ -24,7 +24,6 @@
 
     </LinearLayout>
 
-    <!-- Team Score Comparison -->
     <LinearLayout
         android:id="@+id/scoreComparisonLayout"
         android:layout_width="match_parent"
@@ -124,7 +123,6 @@
                     android:textStyle="bold"
                     android:padding="4dp" />
 
-                <!-- Rearranged stats according to your preference -->
                 <TextView
                     android:layout_width="70dp"
                     android:layout_height="wrap_content"
