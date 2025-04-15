@@ -115,6 +115,70 @@ public class GameDataManager {
         editor.apply();
     }
 
+    public void deleteGame(long gameId) {
+        List<Game> games = getAllGames();
+        Game gameToDelete = null;
+
+        // Find the game to delete
+        for (Game game : games) {
+            if (game.getId() == gameId) {
+                gameToDelete = game;
+                break;
+            }
+        }
+
+        if (gameToDelete != null) {
+            // Remove the game from the list
+            games.remove(gameToDelete);
+
+            // Save updated games list
+            SharedPreferences prefs = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = prefs.edit();
+            String gamesJson = gson.toJson(games);
+            editor.putString(GAMES_KEY, gamesJson);
+            editor.apply();
+
+            // Also remove this game's stats from player records
+            removeGameStatsFromPlayers(gameId);
+        }
+    }
+
+    private void removeGameStatsFromPlayers(long gameId) {
+        Map<String, List<PlayerGameStats>> playerStatsMap = getAllPlayerStats();
+        boolean mapUpdated = false;
+
+        // For each player, remove stats related to this game
+        for (String playerName : playerStatsMap.keySet()) {
+            List<PlayerGameStats> statsList = playerStatsMap.get(playerName);
+            if (statsList != null) {
+                // Create an iterator to safely remove while iterating
+                for (int i = statsList.size() - 1; i >= 0; i--) {
+                    if (statsList.get(i).getGameId() == gameId) {
+                        statsList.remove(i);
+                        mapUpdated = true;
+                    }
+                }
+            }
+        }
+
+        // Save updated player stats if needed
+        if (mapUpdated) {
+            SharedPreferences prefs = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = prefs.edit();
+            String playerStatsJson = gson.toJson(playerStatsMap);
+            editor.putString(PLAYER_STATS_KEY, playerStatsJson);
+            editor.apply();
+        }
+    }
+
+    public void updateGameName(long gameId, String newName) {
+        Game game = getGameById(gameId);
+        if (game != null) {
+            game.setName(newName);
+            saveGame(game);
+        }
+    }
+
     private void updatePlayerGameStats(Map<String, List<PlayerGameStats>> playerStatsMap,
                                        Player player, long gameId, String team) {
         String playerName = player.getName();

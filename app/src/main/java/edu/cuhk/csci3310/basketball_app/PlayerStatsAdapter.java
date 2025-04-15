@@ -140,6 +140,7 @@ public class PlayerStatsAdapter extends RecyclerView.Adapter<PlayerStatsAdapter.
         private final Button stealsButton;
         private final Button blocksButton;
         private final Button turnoversButton;
+        private final Button deletePlayerButton;
 
         public PlayerViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -178,6 +179,7 @@ public class PlayerStatsAdapter extends RecyclerView.Adapter<PlayerStatsAdapter.
             stealsButton = itemView.findViewById(R.id.stealsButton);
             blocksButton = itemView.findViewById(R.id.blocksButton);
             turnoversButton = itemView.findViewById(R.id.turnoversButton);
+            deletePlayerButton = itemView.findViewById(R.id.deletePlayerButton);
         }
 
         public void bind(final Player player) {
@@ -228,6 +230,15 @@ public class PlayerStatsAdapter extends RecyclerView.Adapter<PlayerStatsAdapter.
             setupButton(stealsButton, player, "steals");
             setupButton(blocksButton, player, "blocks");
             setupButton(turnoversButton, player, "turnovers");
+
+            deletePlayerButton.setOnClickListener(v -> {
+                int position = getAdapterPosition();
+                if (position != RecyclerView.NO_POSITION && statIncrementListener != null) {
+                    statIncrementListener.onClick(player, "delete", 0);
+                }
+            });
+
+
         }
 
         private void setupButton(Button button, Player player, String statType) {

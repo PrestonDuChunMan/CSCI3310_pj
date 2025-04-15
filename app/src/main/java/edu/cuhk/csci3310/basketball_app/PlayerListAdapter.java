@@ -9,18 +9,21 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
+import java.util.Locale;
 
 public class PlayerListAdapter extends RecyclerView.Adapter<PlayerListAdapter.PlayerViewHolder> {
 
     private List<String> players;
+    private GameDataManager dataManager;
     private OnPlayerClickListener listener;
 
     public interface OnPlayerClickListener {
         void onPlayerClick(String playerName);
     }
 
-    public PlayerListAdapter(List<String> players, OnPlayerClickListener listener) {
+    public PlayerListAdapter(List<String> players, GameDataManager dataManager, OnPlayerClickListener listener) {
         this.players = players;
+        this.dataManager = dataManager;
         this.listener = listener;
     }
 
@@ -45,10 +48,12 @@ public class PlayerListAdapter extends RecyclerView.Adapter<PlayerListAdapter.Pl
 
     class PlayerViewHolder extends RecyclerView.ViewHolder {
         TextView playerNameTextView;
+        TextView playerPreviewStatsTextView;
 
         PlayerViewHolder(View itemView) {
             super(itemView);
             playerNameTextView = itemView.findViewById(R.id.playerNameTextView);
+            playerPreviewStatsTextView = itemView.findViewById(R.id.playerPreviewStatsTextView);
 
             itemView.setOnClickListener(v -> {
                 int position = getAdapterPosition();
@@ -60,6 +65,10 @@ public class PlayerListAdapter extends RecyclerView.Adapter<PlayerListAdapter.Pl
 
         void bind(String playerName) {
             playerNameTextView.setText(playerName);
+            GameDataManager.PlayerStats stats = dataManager.getPlayerAverageStats(playerName);
+            String preview = String.format(Locale.getDefault(), "%.1f PPG | %.1f RPG | %.1f APG | %.1f%% FG | %.1f%% 3PT",
+                    stats.points, stats.rebounds, stats.assists, stats.getFgPercentage(), stats.get3ptPercentage());
+            playerPreviewStatsTextView.setText(preview);
         }
     }
 }

@@ -7,6 +7,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 
@@ -65,6 +67,16 @@ public class PlayerStatsActivity extends AppCompatActivity {
 
         // Get all games this player participated in
         List<GameDataManager.PlayerGameStats> gameStats = dataManager.getPlayerStats(playerName);
+
+        Collections.sort(gameStats, new Comparator<GameDataManager.PlayerGameStats>() {
+            @Override
+            public int compare(GameDataManager.PlayerGameStats a, GameDataManager.PlayerGameStats b) {
+                Game gameA = dataManager.getGameById(a.getGameId());
+                Game gameB = dataManager.getGameById(b.getGameId());
+                if (gameA == null || gameB == null) return 0;
+                return gameB.getDate().compareTo(gameA.getDate());
+            }
+        });
 
         // Display list of games with player's stats
         PlayerGameStatsAdapter adapter = new PlayerGameStatsAdapter(gameStats, dataManager);

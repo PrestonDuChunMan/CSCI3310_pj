@@ -28,6 +28,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
 
@@ -132,10 +133,20 @@ public class PlayerStatsCounterActivity extends AppCompatActivity {
         String currentDate = sdf.format(new Date());
 
         SharedPreferences prefs = getSharedPreferences("GameCounter", MODE_PRIVATE);
-        int gameCount = prefs.getInt("gameCount", 0) + 1;
+
+        int gameCount = prefs.getInt(currentDate, 0) + 1; // Use currentDate as the key
+
+//        SharedPreferences.Editor editor = prefs.edit();
+//        editor.clear();
+//        editor.apply();
+
 
         String defaultName = currentDate + " Game " + gameCount;
         gameNameEditText.setText(defaultName);
+
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putInt(currentDate, gameCount);
+        editor.apply();
 
         // Create new game object
         currentGame = new Game(defaultName, new ArrayList<>(teamAPlayers), new ArrayList<>(teamBPlayers));
@@ -201,33 +212,46 @@ public class PlayerStatsCounterActivity extends AppCompatActivity {
     }
 
     private void showAddPlayerDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Add Player");
+        GameDataManager dataManager = new GameDataManager(this);
+        // Union of playerPool and players from averages.
+        Set<String> averagePlayers = new HashSet<>(playerPool);
+        Map<String, List<GameDataManager.PlayerGameStats>> stats = dataManager.getAllPlayerStats();
+        averagePlayers.addAll(stats.keySet());
 
+        // Create a display list with an "Add New" option at the top.
+        List<String> displayList = new ArrayList<>();
+        displayList.add("Add New");
+        displayList.addAll(averagePlayers);
+        String[] items = displayList.toArray(new String[0]);
+
+        new AlertDialog.Builder(this)
+                .setTitle("Select Player")
+                .setItems(items, (dialog, which) -> {
+                    if (which == 0) {
+                        showAddNewPlayerDialog();
+                    } else {
+                        addPlayer(items[which]);
+                    }
+                })
+                .setNegativeButton("Cancel", (dialog, which) -> dialog.cancel())
+                .show();
+    }
+
+    private void showAddNewPlayerDialog() {
         final EditText input = new EditText(this);
-        builder.setView(input);
-
-        // If we have existing players in the pool, show them in a selectable list
-        if (!playerPool.isEmpty()) {
-            String[] playerNames = playerPool.toArray(new String[0]);
-            builder.setItems(playerNames, (dialog, which) -> {
-                String selectedName = playerNames[which];
-                addPlayer(selectedName);
-            });
-        }
-
-        builder.setPositiveButton("Add New", (dialog, which) -> {
-            String playerName = input.getText().toString().trim();
-            if (!playerName.isEmpty()) {
-                playerPool.add(playerName);
-                savePlayerPool();
-                addPlayer(playerName);
-            }
-        });
-
-        builder.setNegativeButton("Cancel", (dialog, which) -> dialog.cancel());
-
-        builder.show();
+        new AlertDialog.Builder(this)
+                .setTitle("Add New Player")
+                .setView(input)
+                .setPositiveButton("Add", (dialog, which) -> {
+                    String name = input.getText().toString().trim();
+                    if (!name.isEmpty()) {
+                        playerPool.add(name);
+                        savePlayerPool();
+                        addPlayer(name);
+                    }
+                })
+                .setNegativeButton("Cancel", (dialog, which) -> dialog.cancel())
+                .show();
     }
 
     private void addPlayer(String name) {
@@ -254,6 +278,18 @@ public class PlayerStatsCounterActivity extends AppCompatActivity {
 
         // Update stats based on type
         switch (statType) {
+            case "delete":
+                // Handle player deletion
+                if (currentTeam.equals("A")) {
+                    teamAPlayers.remove(player);
+                } else {
+                    teamBPlayers.remove(player);
+                }
+                adapter.updatePlayers(currentTeamPlayers);
+                updateTeamTotals();
+                updateTeamScores();
+                return; // Return early as we don't need to notifyDataSetChanged again
+
             case "madeFG":
                 player.setMadeFG(player.getMadeFG() + value);
                 player.setPoints(player.getPoints() + (2 * value)); // 2 points per FG
@@ -427,11 +463,16 @@ public class PlayerStatsCounterActivity extends AppCompatActivity {
         GameDataManager dataManager = new GameDataManager(this);
         dataManager.saveGame(currentGame);
 
-        // Update game counter
+        // Get current date
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+        String currentDate = sdf.format(new Date());
+
+        // Update game counter and last date
         SharedPreferences prefs = getSharedPreferences("GameCounter", MODE_PRIVATE);
         int gameCount = prefs.getInt("gameCount", 0) + 1;
         SharedPreferences.Editor editor = prefs.edit();
         editor.putInt("gameCount", gameCount);
+        editor.putString("lastGameDate", currentDate);
         editor.apply();
 
         Toast.makeText(this, "Game stats saved!", Toast.LENGTH_SHORT).show();

@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.HorizontalScrollView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -59,7 +60,7 @@ public class GameDetailsActivity extends AppCompatActivity implements GameStatsA
 
     private void initializeViews() {
         gameNameTextView = findViewById(R.id.gameNameTextView);
-        comparisonTextView = findViewById(R.id.comparisonTextView);
+//        comparisonTextView = findViewById(R.id.comparisonTextView);
         topPerformersTextView = findViewById(R.id.topPerformersTextView);
         playersRecyclerView = findViewById(R.id.playersRecyclerView);
         teamAButton = findViewById(R.id.teamAButton);
@@ -95,71 +96,37 @@ public class GameDetailsActivity extends AppCompatActivity implements GameStatsA
     private void displayGameDetails() {
         gameNameTextView.setText(currentGame.getName());
 
-        // Display team comparison
-        StringBuilder comparison = new StringBuilder();
+        // Get team percentages
+        int fgA = Math.round(currentGame.getTeamFGPercentage("A"));
+        int fgB = Math.round(currentGame.getTeamFGPercentage("B"));
+        int pt3A = Math.round(currentGame.getTeam3PTPercentage("A"));
+        int pt3B = Math.round(currentGame.getTeam3PTPercentage("B"));
+        int ftA = Math.round(currentGame.getTeamFTPercentage("A"));
+        int ftB = Math.round(currentGame.getTeamFTPercentage("B"));
 
-        // Field Goals comparison
-        comparison.append("Field Goals\n");
-        comparison.append(String.format(Locale.getDefault(), "Team A: %d/%d (%.1f%%)\n",
-                currentGame.getTeamMadeFG("A"),
-                currentGame.getTeamFGA("A"),
-                currentGame.getTeamFGPercentage("A")));
+        // Update progress bars
+        ProgressBar fgProgressA = findViewById(R.id.fgProgressA);
+        ProgressBar fgProgressB = findViewById(R.id.fgProgressB);
+        ProgressBar pt3ProgressA = findViewById(R.id.pt3ProgressA);
+        ProgressBar pt3ProgressB = findViewById(R.id.pt3ProgressB);
+        ProgressBar ftProgressA = findViewById(R.id.ftProgressA);
+        ProgressBar ftProgressB = findViewById(R.id.ftProgressB);
 
-        comparison.append(String.format(Locale.getDefault(), "Team B: %d/%d (%.1f%%)\n\n",
-                currentGame.getTeamMadeFG("B"),
-                currentGame.getTeamFGA("B"),
-                currentGame.getTeamFGPercentage("B")));
+        fgProgressA.setProgress(fgA);
+        fgProgressB.setProgress(fgB);
+        pt3ProgressA.setProgress(pt3A);
+        pt3ProgressB.setProgress(pt3B);
+        ftProgressA.setProgress(ftA);
+        ftProgressB.setProgress(ftB);
 
-        // 3-Pointers comparison
-        comparison.append("3-Pointers\n");
-        comparison.append(String.format(Locale.getDefault(), "Team A: %d/%d (%.1f%%)\n",
-                currentGame.getTeamMade3PT("A"),
-                currentGame.getTeam3PTA("A"),
-                currentGame.getTeam3PTPercentage("A")));
+        // (Optional) Hide the old text comparison if present
+//        TextView comparisonTextView = findViewById(R.id.comparisonTextView);
+        if (comparisonTextView != null) {
+            comparisonTextView.setVisibility(View.GONE);
+        }
 
-        comparison.append(String.format(Locale.getDefault(), "Team B: %d/%d (%.1f%%)\n\n",
-                currentGame.getTeamMade3PT("B"),
-                currentGame.getTeam3PTA("B"),
-                currentGame.getTeam3PTPercentage("B")));
-
-        // Free Throws comparison
-        comparison.append("Free Throws\n");
-        comparison.append(String.format(Locale.getDefault(), "Team A: %d/%d (%.1f%%)\n",
-                currentGame.getTeamMadeFT("A"),
-                currentGame.getTeamFTA("A"),
-                currentGame.getTeamFTPercentage("A")));
-
-        comparison.append(String.format(Locale.getDefault(), "Team B: %d/%d (%.1f%%)\n\n",
-                currentGame.getTeamMadeFT("B"),
-                currentGame.getTeamFTA("B"),
-                currentGame.getTeamFTPercentage("B")));
-
-        // Other stats comparison
-        comparison.append(String.format(Locale.getDefault(), "Rebounds: Team A %d - Team B %d\n",
-                currentGame.getTeamRebounds("A"),
-                currentGame.getTeamRebounds("B")));
-
-        comparison.append(String.format(Locale.getDefault(), "Assists: Team A %d - Team B %d\n",
-                currentGame.getTeamAssists("A"),
-                currentGame.getTeamAssists("B")));
-
-        comparison.append(String.format(Locale.getDefault(), "Steals: Team A %d - Team B %d\n",
-                currentGame.getTeamSteals("A"),
-                currentGame.getTeamSteals("B")));
-
-        comparison.append(String.format(Locale.getDefault(), "Blocks: Team A %d - Team B %d\n",
-                currentGame.getTeamBlocks("A"),
-                currentGame.getTeamBlocks("B")));
-
-        comparison.append(String.format(Locale.getDefault(), "Turnovers: Team A %d - Team B %d",
-                currentGame.getTeamTurnovers("A"),
-                currentGame.getTeamTurnovers("B")));
-
-        comparisonTextView.setText(comparison.toString());
-
-        // Display top performers
+        // Existing display logic for top performers remains unchanged
         StringBuilder topPerformers = new StringBuilder("Top Performers\n\n");
-
         Player teamATop = currentGame.getTopPerformer("A");
         Player teamBTop = currentGame.getTopPerformer("B");
 
@@ -171,7 +138,6 @@ public class GameDetailsActivity extends AppCompatActivity implements GameStatsA
                     teamATop.getRebounds(),
                     teamATop.getAssists()));
         }
-
         if (teamBTop != null) {
             topPerformers.append(String.format(Locale.getDefault(),
                     "Team B: %s - %d pts, %d reb, %d ast",
@@ -180,9 +146,9 @@ public class GameDetailsActivity extends AppCompatActivity implements GameStatsA
                     teamBTop.getRebounds(),
                     teamBTop.getAssists()));
         }
-
         topPerformersTextView.setText(topPerformers.toString());
     }
+
 
     private void switchTeam(String team) {
         currentTeam = team;
